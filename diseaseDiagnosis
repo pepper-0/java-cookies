@@ -121,15 +121,15 @@ export const cropDiseaseDatabase = {
           description:
             "Use locally adapted maize varieties with resistance to Northern Leaf Blight.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCostUSD: "4,600-9,200 CDF per kg of seed, depending on variety and local availability."
         },
 
         {
           name: "Locally approved fungicide",
           category: "chemical",
           description:
-            "Fungicide may be considered when disease pressure and expected crop losses justify treatment. Only recommend products registered locally for maize and follow the product label.",
-          costLevel: "variable",
+            "Fungicide may be considered when disease pressure and expected crop losses justify treatment. Not recommended due to high cost and severe regulations.",
+          costLevel: "high",
           estimatedCostUSD: null,
           requiresLocalVerification: true
         }

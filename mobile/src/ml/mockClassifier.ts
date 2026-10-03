@@ -7,7 +7,6 @@ export const mockClassifier: ImageClassifier = {
       diagnosis_id: 'cassava_mosaic_disease',
       crop: 'cassava',
       confidence: 0.92,
-      severity: 'moderate',
     };
   },
 };

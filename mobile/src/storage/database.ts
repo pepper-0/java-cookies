@@ -45,7 +45,6 @@ export async function migrateDatabase(db: SQLiteDatabase) {
       crop TEXT NOT NULL,
       diagnosis_id TEXT NOT NULL,
       confidence REAL NOT NULL,
-      severity TEXT,
       sync_status TEXT NOT NULL CHECK (sync_status IN ('PENDING', 'SYNCED')),
       FOREIGN KEY (farmer_id) REFERENCES farmers(local_id),
       FOREIGN KEY (farm_id) REFERENCES farms(local_id)
@@ -131,15 +130,14 @@ export async function saveObservation(db: SQLiteDatabase, input: ObservationInpu
     crop: input.crop,
     diagnosis_id: input.diagnosisId,
     confidence: input.confidence,
-    severity: input.severity ?? null,
     sync_status: 'PENDING',
   };
 
   await db.runAsync(
     `INSERT INTO observations (
       local_id, farmer_id, farm_id, timestamp, image_uri, crop,
-      diagnosis_id, confidence, severity, sync_status
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      diagnosis_id, confidence, sync_status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     observation.local_id,
     observation.farmer_id,
     observation.farm_id,
@@ -148,7 +146,6 @@ export async function saveObservation(db: SQLiteDatabase, input: ObservationInpu
     observation.crop,
     observation.diagnosis_id,
     observation.confidence,
-    observation.severity,
     observation.sync_status,
   );
 
@@ -156,7 +153,12 @@ export async function saveObservation(db: SQLiteDatabase, input: ObservationInpu
 }
 
 export async function getObservations(db: SQLiteDatabase) {
-  return db.getAllAsync<Observation>('SELECT * FROM observations ORDER BY timestamp DESC');
+  return db.getAllAsync<Observation>(`
+    SELECT local_id, farmer_id, farm_id, timestamp, image_uri, crop,
+           diagnosis_id, confidence, sync_status
+    FROM observations
+    ORDER BY timestamp DESC
+  `);
 }
 
 export async function getPendingCount(db: SQLiteDatabase) {
@@ -174,7 +176,11 @@ export async function getPendingRecords(db: SQLiteDatabase) {
     db.getAllAsync<Farmer>("SELECT * FROM farmers WHERE sync_status = 'PENDING' ORDER BY rowid"),
     db.getAllAsync<Farm>("SELECT * FROM farms WHERE sync_status = 'PENDING' ORDER BY rowid"),
     db.getAllAsync<Observation>(
-      "SELECT * FROM observations WHERE sync_status = 'PENDING' ORDER BY timestamp"
+      `SELECT local_id, farmer_id, farm_id, timestamp, image_uri, crop,
+              diagnosis_id, confidence, sync_status
+       FROM observations
+       WHERE sync_status = 'PENDING'
+       ORDER BY timestamp`
     ),
   ]);
   return { farmers, farms, observations };

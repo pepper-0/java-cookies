@@ -68,7 +68,6 @@ export default function DiagnoseScreen() {
           diagnosisId: diagnosis.diagnosis_id,
           crop: diagnosis.crop,
           confidence: String(diagnosis.confidence),
-          severity: diagnosis.severity ?? '',
         },
       });
     } catch (error) {
@@ -81,7 +80,7 @@ export default function DiagnoseScreen() {
   return (
     <Screen
       eyebrow="Step 1 of 2"
-      title="Add a clear crop photo"
+      title="Add a Clear Crop Photo"
       subtitle="Photograph the affected leaves in good light. The current checkpoint returns a mock cassava result."
     >
       <Card>
@@ -90,7 +89,7 @@ export default function DiagnoseScreen() {
         ) : (
           <View style={styles.emptyPreview}>
             <Text style={styles.emptyIcon}>+</Text>
-            <Text style={styles.emptyTitle}>No photo selected</Text>
+            <Text style={styles.emptyTitle}>No Photo Selected</Text>
             <Text style={styles.emptyBody}>Use the camera or choose an existing image.</Text>
           </View>
         )}

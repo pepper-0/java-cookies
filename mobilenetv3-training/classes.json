@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "classes": [
+    { "index": 0, "crop": "maize", "diagnosis_id": "maize_healthy", "display_name": "Healthy" },
+    { "index": 1, "crop": "maize", "diagnosis_id": "maize_streak_disease", "display_name": "Maize Streak Disease" },
+    { "index": 2, "crop": "maize", "diagnosis_id": "maize_northern_leaf_blight", "display_name": "Northern Leaf Blight" },
+    { "index": 3, "crop": "maize", "diagnosis_id": "maize_common_rust", "display_name": "Common Rust" },
+    { "index": 4, "crop": "maize", "diagnosis_id": "maize_unknown", "display_name": "Unknown" },
+    { "index": 5, "crop": "cassava", "diagnosis_id": "cassava_healthy", "display_name": "Healthy" },
+    { "index": 6, "crop": "cassava", "diagnosis_id": "cassava_brown_streak_disease", "display_name": "Cassava Brown Streak Disease" },
+    { "index": 7, "crop": "cassava", "diagnosis_id": "cassava_bacterial_blight", "display_name": "Cassava Bacterial Blight" },
+    { "index": 8, "crop": "cassava", "diagnosis_id": "cassava_mosaic_disease", "display_name": "Cassava Mosaic Disease" },
+    { "index": 9, "crop": "cassava", "diagnosis_id": "cassava_unknown", "display_name": "Unknown" },
+    { "index": 10, "crop": "rice", "diagnosis_id": "rice_healthy", "display_name": "Healthy" },
+    { "index": 11, "crop": "rice", "diagnosis_id": "rice_bacterial_leaf_blight", "display_name": "Bacterial Leaf Blight" },
+    { "index": 12, "crop": "rice", "diagnosis_id": "rice_blast", "display_name": "Rice Blast" },
+    { "index": 13, "crop": "rice", "diagnosis_id": "rice_yellow_mottle_disease", "display_name": "Rice Yellow Mottle Disease" },
+    { "index": 14, "crop": "rice", "diagnosis_id": "rice_unknown", "display_name": "Unknown" }
+  ]
+}

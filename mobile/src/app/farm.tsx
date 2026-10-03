@@ -1,9 +1,17 @@
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
 import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 
+import { MultiSelectField, SelectField } from '@/components/selection-field';
 import { ActionButton, Card, FormField, Screen, SectionTitle, StatusBadge } from '@/components/ui';
+import {
+  cropSelectOptions,
+  languageSelectOptions,
+  normalizeLanguage,
+  parsePrimaryCrops,
+  serializePrimaryCrops,
+} from '@/constants/profile-options';
 import { getObservations, getProfile, saveProfile } from '@/storage/database';
 import type { Observation } from '@/storage/types';
 import { colors, radius, spacing } from '@/theme';
@@ -13,13 +21,16 @@ const blankForm = {
   province: '',
   territory: '',
   village: '',
-  preferredLanguage: 'Français',
-  primaryCrops: '',
+  preferredLanguage: 'French',
 };
 
 export default function FarmScreen() {
   const db = useSQLiteContext();
+  const { onboarding } = useLocalSearchParams<{ onboarding?: string }>();
+  const isOnboarding = onboarding === '1';
   const [form, setForm] = useState(blankForm);
+  const [selectedCrops, setSelectedCrops] = useState<string[]>([]);
+  const [otherCrop, setOtherCrop] = useState('');
   const [observations, setObservations] = useState<Observation[]>([]);
   const [saving, setSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
@@ -27,14 +38,16 @@ export default function FarmScreen() {
   const reload = useCallback(async () => {
     const [profile, savedObservations] = await Promise.all([getProfile(db), getObservations(db)]);
     if (profile) {
+      const parsedCrops = parsePrimaryCrops(profile.farm?.primary_crops);
       setForm({
         name: profile.farmer.name,
         province: profile.farmer.province,
         territory: profile.farmer.territory,
         village: profile.farmer.village,
-        preferredLanguage: profile.farmer.preferred_language,
-        primaryCrops: profile.farm?.primary_crops ?? '',
+        preferredLanguage: normalizeLanguage(profile.farmer.preferred_language),
       });
+      setSelectedCrops(parsedCrops.selectedCrops);
+      setOtherCrop(parsedCrops.otherCrop);
     }
     setObservations(savedObservations);
   }, [db]);
@@ -52,12 +65,23 @@ export default function FarmScreen() {
 
   async function save() {
     if (!form.name.trim()) {
-      Alert.alert('Name required', 'Enter the farmer name before saving.');
+      Alert.alert('Name Required', 'Enter the farmer name before saving.');
+      return;
+    }
+    if (selectedCrops.includes('Other') && !otherCrop.trim()) {
+      Alert.alert('Other Crop Required', 'Enter the name of the other crop before saving.');
       return;
     }
     try {
       setSaving(true);
-      await saveProfile(db, form);
+      await saveProfile(db, {
+        ...form,
+        primaryCrops: serializePrimaryCrops(selectedCrops, otherCrop),
+      });
+      if (isOnboarding) {
+        router.replace('/onboarding');
+        return;
+      }
       setSavedMessage('Farmer and farm saved locally as PENDING.');
       await reload();
     } catch (error) {
@@ -69,14 +93,16 @@ export default function FarmScreen() {
 
   return (
     <Screen
-      eyebrow="Local profile"
-      title="My farm"
-      subtitle="These details are stored on this device first and never require a connection."
+      eyebrow={isOnboarding ? 'First-Time Setup' : 'Local Profile'}
+      title={isOnboarding ? 'Create Your Farm Profile' : 'My Farm'}
+      subtitle={isOnboarding
+        ? 'Tell us about your farm. These details stay on this device and can be completed without internet.'
+        : 'These details are stored on this device first and never require a connection.'}
     >
       <Card>
         <FormField
           autoCapitalize="words"
-          label="Farmer name"
+          label="Farmer Name"
           onChangeText={(value) => update('name', value)}
           placeholder="e.g. Marie Kabeya"
           value={form.name}
@@ -102,22 +128,42 @@ export default function FarmScreen() {
           placeholder="Village"
           value={form.village}
         />
-        <FormField
-          label="Preferred language"
-          onChangeText={(value) => update('preferredLanguage', value)}
-          placeholder="Français, Lingala, Swahili…"
+        <SelectField
+          label="Preferred Language"
+          onChange={(value) => update('preferredLanguage', value)}
+          options={languageSelectOptions}
           value={form.preferredLanguage}
         />
-        <FormField
-          autoCapitalize="words"
-          hint="Separate multiple crops with commas."
-          label="Primary crops"
-          onChangeText={(value) => update('primaryCrops', value)}
-          placeholder="Cassava, maize, beans"
-          value={form.primaryCrops}
+        <MultiSelectField
+          hint="Choose every crop grown on this farm."
+          label="Primary Crops"
+          onChange={(values) => {
+            setSavedMessage(null);
+            setSelectedCrops(values);
+            if (!values.includes('Other')) setOtherCrop('');
+          }}
+          options={cropSelectOptions}
+          values={selectedCrops}
         />
-        <ActionButton label="Save locally" loading={saving} onPress={save} />
-        {savedMessage ? (
+        {selectedCrops.includes('Other') ? (
+          <FormField
+            autoCapitalize="words"
+            hint="Use commas if you need to enter more than one additional crop."
+            label="Other Crop"
+            onChangeText={(value) => {
+              setSavedMessage(null);
+              setOtherCrop(value);
+            }}
+            placeholder="e.g. Beans"
+            value={otherCrop}
+          />
+        ) : null}
+        <ActionButton
+          label={isOnboarding ? 'Save and Continue' : 'Save Locally'}
+          loading={saving}
+          onPress={save}
+        />
+        {!isOnboarding && savedMessage ? (
           <View style={styles.confirmation}>
             <StatusBadge status="PENDING" />
             <Text style={styles.confirmationText}>{savedMessage}</Text>
@@ -125,26 +171,30 @@ export default function FarmScreen() {
         ) : null}
       </Card>
 
-      <SectionTitle>Saved observations</SectionTitle>
-      {observations.length === 0 ? (
-        <Card><Text style={styles.empty}>No observations yet. Diagnose a crop to add one.</Text></Card>
-      ) : (
-        observations.map((observation) => (
-          <Card key={observation.local_id}>
-            <View style={styles.observationRow}>
-              <Image source={{ uri: observation.image_uri }} style={styles.thumbnail} />
-              <View style={styles.observationCopy}>
-                <Text style={styles.observationTitle}>{formatDiagnosis(observation.diagnosis_id)}</Text>
-                <Text style={styles.observationDetail}>
-                  {capitalize(observation.crop)} · {Math.round(observation.confidence * 100)}% confidence
-                </Text>
-                <Text style={styles.observationDetail}>{new Date(observation.timestamp).toLocaleString()}</Text>
-              </View>
-              <StatusBadge status={observation.sync_status} />
-            </View>
-          </Card>
-        ))
-      )}
+      {!isOnboarding ? (
+        <>
+          <SectionTitle>Saved Observations</SectionTitle>
+          {observations.length === 0 ? (
+            <Card><Text style={styles.empty}>No observations yet. Diagnose a crop to add one.</Text></Card>
+          ) : (
+            observations.map((observation) => (
+              <Card key={observation.local_id}>
+                <View style={styles.observationRow}>
+                  <Image source={{ uri: observation.image_uri }} style={styles.thumbnail} />
+                  <View style={styles.observationCopy}>
+                    <Text style={styles.observationTitle}>{formatDiagnosis(observation.diagnosis_id)}</Text>
+                    <Text style={styles.observationDetail}>
+                      {capitalize(observation.crop)} · {Math.round(observation.confidence * 100)}% confidence
+                    </Text>
+                    <Text style={styles.observationDetail}>{new Date(observation.timestamp).toLocaleString()}</Text>
+                  </View>
+                  <StatusBadge status={observation.sync_status} />
+                </View>
+              </Card>
+            ))
+          )}
+        </>
+      ) : null}
     </Screen>
   );
 }

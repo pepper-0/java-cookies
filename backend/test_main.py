@@ -1,8 +1,9 @@
+import sqlite3
 from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from main import create_app
+from main import create_app, init_database
 
 
 def test_checkpoint_endpoints(tmp_path: Path) -> None:
@@ -48,7 +49,6 @@ def test_checkpoint_endpoints(tmp_path: Path) -> None:
             "crop": "cassava",
             "diagnosis_id": "cassava_mosaic_disease",
             "confidence": 0.92,
-            "severity": "moderate",
             "sync_status": "PENDING",
         }
         first_post = client.post("/observations", json=observation)
@@ -60,3 +60,30 @@ def test_checkpoint_endpoints(tmp_path: Path) -> None:
         assert saved.status_code == 200
         assert len(saved.json()) == 1
         assert saved.json()[0]["sync_status"] == "SYNCED"
+        assert "severity" not in saved.json()[0]
+
+
+def test_observation_api_ignores_legacy_severity_column(tmp_path: Path) -> None:
+    database_path = tmp_path / "legacy.db"
+    init_database(database_path)
+    with sqlite3.connect(database_path) as connection:
+        connection.execute("ALTER TABLE observations ADD COLUMN severity TEXT")
+
+    app = create_app(database_path)
+    observation = {
+        "local_id": "legacy-observation-1",
+        "farmer_id": None,
+        "farm_id": None,
+        "timestamp": "2026-10-03T12:00:00Z",
+        "image_uri": "file:///local/cassava.jpg",
+        "crop": "cassava",
+        "diagnosis_id": "cassava_mosaic_disease",
+        "confidence": 0.92,
+        "sync_status": "PENDING",
+    }
+
+    with TestClient(app) as client:
+        assert client.post("/observations", json=observation).status_code == 200
+        saved_observation = client.get("/observations").json()[0]
+        assert saved_observation["diagnosis_id"] == "cassava_mosaic_disease"
+        assert "severity" not in saved_observation

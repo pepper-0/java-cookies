@@ -29,7 +29,6 @@ export type Observation = {
   crop: string;
   diagnosis_id: string;
   confidence: number;
-  severity: string | null;
   sync_status: SyncStatus;
 };
 
@@ -52,5 +51,4 @@ export type ObservationInput = {
   crop: string;
   diagnosisId: string;
   confidence: number;
-  severity?: string;
 };

@@ -95,8 +95,8 @@ export default function SyncScreen() {
 
   return (
     <Screen
-      eyebrow="Offline queue"
-      title="Sync status"
+      eyebrow="Offline Queue"
+      title="Sync Status"
       subtitle="Records stay on this device until the prototype backend acknowledges them."
       right={connection === 'UNKNOWN' ? undefined : <StatusBadge status={connection} />}
     >
@@ -104,13 +104,13 @@ export default function SyncScreen() {
         <View style={styles.metricCard}>
           <Card>
             <Text style={styles.metricValue}>{pendingCount}</Text>
-            <Text style={styles.metricLabel}>Pending records</Text>
+            <Text style={styles.metricLabel}>Pending Records</Text>
           </Card>
         </View>
         <View style={styles.metricCard}>
           <Card>
             <Text style={styles.metricSmall}>{lastSyncAt ? formatDate(lastSyncAt) : 'Never'}</Text>
-            <Text style={styles.metricLabel}>Last confirmed sync</Text>
+            <Text style={styles.metricLabel}>Last Confirmed Sync</Text>
           </Card>
         </View>
       </View>
@@ -139,11 +139,11 @@ export default function SyncScreen() {
       </Card>
 
       <Card>
-        <Text style={styles.messageTitle}>Latest activity</Text>
+        <Text style={styles.messageTitle}>Latest Activity</Text>
         <Text style={styles.message}>{message}</Text>
       </Card>
 
-      <SectionTitle>Queue rules</SectionTitle>
+      <SectionTitle>Queue Rules</SectionTitle>
       <View style={styles.rules}>
         <Text style={styles.rule}>• Saving never requires internet.</Text>
         <Text style={styles.rule}>• Failed requests do not delete local data.</Text>

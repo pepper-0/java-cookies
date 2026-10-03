@@ -20,10 +20,12 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="diagnose" options={{ title: 'Diagnose crop' }} />
-        <Stack.Screen name="result" options={{ title: 'Diagnosis result' }} />
-        <Stack.Screen name="farm" options={{ title: 'My farm' }} />
-        <Stack.Screen name="sync" options={{ title: 'Sync status' }} />
+        <Stack.Screen name="diagnose" options={{ title: 'Diagnose Crop' }} />
+        <Stack.Screen name="result" options={{ title: 'Diagnosis Result' }} />
+        <Stack.Screen name="farm" options={{ title: 'My Farm' }} />
+        <Stack.Screen name="sync" options={{ title: 'Sync Status' }} />
+        <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
       </Stack>
     </SQLiteProvider>
   );

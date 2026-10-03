@@ -8,6 +8,7 @@ Checkpoint 1 implementation of an offline-first Android agriculture app for smal
 - Home, Diagnose, Result, My Farm, and Sync Status screens
 - Android camera and gallery photo selection
 - isolated asynchronous mock classifier contract
+- MobileNetV3Small training, evaluation, and TFLite-export scaffold awaiting image datasets
 - durable app-local image copies and SQLite records
 - locally saved farmer, farm, and observation data
 - explicit `PENDING` to `SYNCED` queue behavior
@@ -70,4 +71,4 @@ The default backend address is `http://10.0.2.2:8000`, which is correct for the 
 
 ## Intentional stopping point
 
-There is no real TFLite or ONNX model, TTS, market-price integration, or production registry integration. The future model adapter is documented in `mobile/src/ml/model/README.md`.
+There is no trained TFLite or ONNX model, TTS, market-price integration, or production registry integration. The dataset-ready training pipeline is documented in `mobilenetv3-training/README.md`, and the future app adapter is documented in `mobile/src/ml/model/README.md`.

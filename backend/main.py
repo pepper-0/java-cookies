@@ -44,7 +44,6 @@ class ObservationPayload(BaseModel):
     crop: str = Field(min_length=1)
     diagnosis_id: str = Field(min_length=1)
     confidence: float = Field(ge=0, le=1)
-    severity: str | None = None
     sync_status: Literal["PENDING", "SYNCED"] = "PENDING"
 
 
@@ -92,7 +91,6 @@ def init_database(path: Path) -> None:
               crop TEXT NOT NULL,
               diagnosis_id TEXT NOT NULL,
               confidence REAL NOT NULL,
-              severity TEXT,
               sync_status TEXT NOT NULL,
               received_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
@@ -203,8 +201,8 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                 """
                 INSERT INTO observations (
                   local_id, farmer_id, farm_id, timestamp, image_uri, crop,
-                  diagnosis_id, confidence, severity, sync_status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'SYNCED')
+                  diagnosis_id, confidence, sync_status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'SYNCED')
                 ON CONFLICT(local_id) DO UPDATE SET
                   farmer_id = excluded.farmer_id,
                   farm_id = excluded.farm_id,
@@ -213,7 +211,6 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                   crop = excluded.crop,
                   diagnosis_id = excluded.diagnosis_id,
                   confidence = excluded.confidence,
-                  severity = excluded.severity,
                   sync_status = 'SYNCED',
                   received_at = CURRENT_TIMESTAMP
                 """,
@@ -226,7 +223,6 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                     payload.crop,
                     payload.diagnosis_id,
                     payload.confidence,
-                    payload.severity,
                 ),
             )
         return SyncResponse(id=payload.local_id)
@@ -237,7 +233,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
             rows = connection.execute(
                 """
                 SELECT local_id, farmer_id, farm_id, timestamp, image_uri, crop,
-                       diagnosis_id, confidence, severity, sync_status
+                       diagnosis_id, confidence, sync_status
                 FROM observations
                 ORDER BY timestamp DESC
                 """

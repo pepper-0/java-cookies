@@ -460,8 +460,8 @@ export const cropDiseaseDatabase = {
           category: "prevention",
           description:
             "Use locally recommended rice varieties resistant or tolerant to bacterial leaf blight.",
-          costLevel: "variable",
-          estimatedCost: null
+          costLevel: null,
+          estimatedCost: "Generally inaccessible for smallholder farmers in DRC, but may be available through local agricultural extension services or research institutions."
         },
 
         {
@@ -470,7 +470,7 @@ export const cropDiseaseDatabase = {
           description:
             "Plant healthy seed from reliable sources.",
           costLevel: "variable",
-          estimatedCost: null
+          estimatedCost: "Standad rice seed costs 4,600-6,000 CDF per kg, depending on variety and local availability."
         },
 
         {
@@ -478,8 +478,8 @@ export const cropDiseaseDatabase = {
           category: "field_management",
           description:
             "Avoid excessive nitrogen fertilizer, which can increase susceptibility to bacterial leaf blight.",
-          costLevel: "free",
-          estimatedCost: 0
+          costLevel: "variable",
+          estimatedCost: "Cost difference depends on the previously used fertilizer. Nitrogen fertilizer generally retails for around 80,000-100,000 CDF per 50 kg bag, depending on the type and local availability. Fertilizer with nitrogen generally costs around 100,000 CDF per 50 kg bag."
         }
       ],
 
@@ -533,16 +533,6 @@ export const cropDiseaseDatabase = {
           costLevel: "low",
           estimatedCost: null
         },
-
-        {
-          name: "Locally approved fungicide",
-          category: "chemical",
-          description:
-            "Where economically justified, an appropriately registered rice fungicide may be considered. Follow local recommendations and the product label.",
-          costLevel: "variable",
-          estimatedCost: null,
-          requiresLocalVerification: true
-        }
       ],
 
       voiceMessage:
@@ -589,21 +579,12 @@ export const cropDiseaseDatabase = {
         },
 
         {
-          name: "Use healthy planting material",
-          category: "prevention",
-          description:
-            "Start future crops with healthy seed or planting material from reliable sources.",
-          costLevel: "variable",
-          estimatedCost: null
-        },
-
-        {
           name: "Clean agricultural tools",
           category: "prevention",
           description:
             "Clean tools and equipment when moving between affected and unaffected rice areas.",
           costLevel: "low",
-          estimatedCost: null
+          estimatedCost: "Around 2,700 cdf for 1 kg of 85% ethanol alcohol. Costs may vary based on local availability and quantity purchased."
         }
       ],
 

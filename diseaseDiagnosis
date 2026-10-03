@@ -61,7 +61,7 @@ export const cropDiseaseDatabase = {
           description:
             "Remove severely affected plants where practical to reduce potential sources of infection.",
           costLevel: "low",
-          estimatedCostUSD: "Labor intensive, but low-cost if done manually."
+          estimatedCost: "Labor intensive, but low-cost if done manually."
         },
 
         {
@@ -70,7 +70,7 @@ export const cropDiseaseDatabase = {
           description:
             "For future planting, use locally adapted maize varieties with resistance or tolerance to maize streak disease.",
           costLevel: "variable",
-          estimatedCostUSD: "7,700 - 10,000 CDF per kg of seed, depending on variety and local availability."
+          estimatedCost: "7,700 - 10,000 CDF per kg of seed, depending on variety and local availability."
         },
       ],
 
@@ -103,7 +103,7 @@ export const cropDiseaseDatabase = {
           description:
             "Manage infected maize residue after harvest to reduce disease carryover. This can be done by plowing under residue, removing it, or burning it where allowed.",
           costLevel: "low",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -112,7 +112,7 @@ export const cropDiseaseDatabase = {
           description:
             "Rotate maize with suitable non-host crops (root vegetables, legumes, etc.) when practical.",
           costLevel: "variable",
-          estimatedCostUSD: "Costs depend on the crops chosen for rotation and local market prices. For example, legumes may cost 3,000 - 8,000 CDF per kg of seed (depending on the type of legume), while root vegetables may cost 1,100 - 5,000 CDF per kg of seed."
+          estimatedCost: "Costs depend on the crops chosen for rotation and local market prices. For example, legumes may cost 3,000 - 8,000 CDF per kg of seed (depending on the type of legume), while root vegetables may cost 1,100 - 5,000 CDF per kg of seed."
         },
 
         {
@@ -121,7 +121,7 @@ export const cropDiseaseDatabase = {
           description:
             "Use locally adapted maize varieties with resistance to Northern Leaf Blight.",
           costLevel: "variable",
-          estimatedCostUSD: "4,600-9,200 CDF per kg of seed, depending on variety and local availability."
+          estimatedCost: "4,600-9,200 CDF per kg of seed, depending on variety and local availability."
         },
 
         {
@@ -129,8 +129,8 @@ export const cropDiseaseDatabase = {
           category: "chemical",
           description:
             "Fungicide may be considered when disease pressure and expected crop losses justify treatment. Not recommended due to high cost and severe regulations.",
-          costLevel: "high",
-          estimatedCostUSD: null,
+          costLevel: "expensive",
+          estimatedCost: null,
           requiresLocalVerification: true
         }
       ],
@@ -164,7 +164,7 @@ export const cropDiseaseDatabase = {
           description:
             "Monitor nearby maize plants and determine whether the disease is spreading significantly.",
           costLevel: "free",
-          estimatedCostUSD: 0
+          estimatedCost: 0
         },
 
         {
@@ -173,7 +173,7 @@ export const cropDiseaseDatabase = {
           description:
             "Use locally adapted rust-resistant maize varieties in future planting.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost: "4,500-9,200 CDF per kg of seed, depending on variety and local availability."
         },
 
         {
@@ -181,8 +181,8 @@ export const cropDiseaseDatabase = {
           category: "chemical",
           description:
             "Fungicide may be considered for severe disease when economically justified. Use only a product registered locally for maize and follow its label.",
-          costLevel: "variable",
-          estimatedCostUSD: null,
+          costLevel: "expensive",
+          estimatedCost: "Costs depend on the fungicide used, application method, and local prices. For example, a registered fungicide may cost 15,000 - 30,000 CDF per liter, and application may require additional labor or equipment costs.",
           requiresLocalVerification: true
         }
       ],
@@ -248,7 +248,7 @@ export const cropDiseaseDatabase = {
           description:
             "Avoid using stems from symptomatic plants as planting material.",
           costLevel: "free",
-          estimatedCostUSD: 0
+          estimatedCost: 0
         },
 
         {
@@ -257,7 +257,7 @@ export const cropDiseaseDatabase = {
           description:
             "Use healthy cassava cuttings from reliable sources.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost: "5,000 - 10,000 CDF per bundle of cuttings (containing 50-100 stems), depending on local availability and variety."
         },
 
         {
@@ -266,7 +266,7 @@ export const cropDiseaseDatabase = {
           description:
             "Use locally recommended cassava varieties with resistance or tolerance where available.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -275,12 +275,12 @@ export const cropDiseaseDatabase = {
           description:
             "Remove strongly symptomatic plants where recommended and practical to reduce sources of infection.",
           costLevel: "low",
-          estimatedCostUSD: null
+          estimatedCost: null
         }
       ],
 
       voiceMessage:
-        "Your cassava may have Cassava Brown Streak Disease. This is a viral disease. Please also photograph the inside of an affected cassava root if possible."
+        "Your cassava may have Cassava Brown Streak Disease. This is a viral disease. Please also photograph the inside of an affected cassava root if possible to further confirm diagnosis. Here are some management options to reduce its spread."
     },
 
 
@@ -310,7 +310,7 @@ export const cropDiseaseDatabase = {
           description:
             "Do not propagate cassava using cuttings from plants showing bacterial blight symptoms.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -319,16 +319,16 @@ export const cropDiseaseDatabase = {
           description:
             "Remove severely infected plants or plant material where practical.",
           costLevel: "low",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
           name: "Sanitize cutting tools",
           category: "prevention",
           description:
-            "Clean tools used to cut infected cassava before using them on healthy plants.",
+            "Clean tools used to cut infected cassava before using them on healthy plants. Rinse with water and disinfect with 70%-100% ethanol alcohol if available. Allow to airdry for several minutes before using on healthy plants.",
           costLevel: "low",
-          estimatedCostUSD: null
+          estimatedCost: "Around 2,700 cdf for 1 kg of 85% ethanol alcohol. Costs may vary based on local availability and quantity purchased."
         },
 
         {
@@ -337,7 +337,7 @@ export const cropDiseaseDatabase = {
           description:
             "Use locally adapted varieties with resistance or tolerance where available.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost: "4,600-11,000 CDF per bundle of stems(50-100), depending on variety and local availability. DRC cassava varieties with resistance to bacterial blight may be available for free/subsidized pricing through local agricultural extension services or research institutions."
         }
       ],
 
@@ -371,7 +371,7 @@ export const cropDiseaseDatabase = {
           description:
             "Remove strongly symptomatic plants where appropriate to reduce sources of infection.",
           costLevel: "low",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -380,7 +380,7 @@ export const cropDiseaseDatabase = {
           description:
             "Do not take planting cuttings from cassava showing mosaic symptoms.",
           costLevel: "free",
-          estimatedCostUSD: 0
+          estimatedCost: 0
         },
 
         {
@@ -389,7 +389,7 @@ export const cropDiseaseDatabase = {
           description:
             "Use healthy planting material from reliable sources.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost:  "4,600-11,000 CDF per bundle of stems(50-100), depending on variety and local availability."
         },
 
         {
@@ -398,12 +398,12 @@ export const cropDiseaseDatabase = {
           description:
             "Use locally recommended CMD-resistant cassava varieties where available.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost:  "4,600-11,000 CDF per bundle of stems(50-100), depending on variety and local availability. DRC cassava varieties with resistance to bacterial blight may be available for free/subsidized pricing through local agricultural extension services or research institutions."
         }
       ],
 
       voiceMessage:
-        "Your cassava may have Cassava Mosaic Disease. This disease is caused by a virus, so fungicides will not cure it. Avoid using affected plants for new cuttings."
+        "Your cassava may have Cassava Mosaic Disease. This disease is caused by a virus, so fungicides will not cure it. Avoid using affected plants for new cuttings. Here are some management options to reduce its spread."
     }
   },
 
@@ -461,7 +461,7 @@ export const cropDiseaseDatabase = {
           description:
             "Use locally recommended rice varieties resistant or tolerant to bacterial leaf blight.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -470,7 +470,7 @@ export const cropDiseaseDatabase = {
           description:
             "Plant healthy seed from reliable sources.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -479,7 +479,7 @@ export const cropDiseaseDatabase = {
           description:
             "Avoid excessive nitrogen fertilizer, which can increase susceptibility to bacterial leaf blight.",
           costLevel: "free",
-          estimatedCostUSD: 0
+          estimatedCost: 0
         }
       ],
 
@@ -513,7 +513,7 @@ export const cropDiseaseDatabase = {
           description:
             "Plant locally adapted rice varieties with resistance to blast where available.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -522,7 +522,7 @@ export const cropDiseaseDatabase = {
           description:
             "Avoid applying excessive nitrogen fertilizer because it can increase blast susceptibility.",
           costLevel: "free",
-          estimatedCostUSD: 0
+          estimatedCost: 0
         },
 
         {
@@ -531,7 +531,7 @@ export const cropDiseaseDatabase = {
           description:
             "Manage infected rice residue according to locally appropriate practices.",
           costLevel: "low",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -540,7 +540,7 @@ export const cropDiseaseDatabase = {
           description:
             "Where economically justified, an appropriately registered rice fungicide may be considered. Follow local recommendations and the product label.",
           costLevel: "variable",
-          estimatedCostUSD: null,
+          estimatedCost: null,
           requiresLocalVerification: true
         }
       ],
@@ -576,7 +576,7 @@ export const cropDiseaseDatabase = {
           description:
             "Remove severely affected plants where appropriate to reduce potential sources of infection.",
           costLevel: "low",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -585,7 +585,7 @@ export const cropDiseaseDatabase = {
           description:
             "Use locally recommended RYMV-resistant or tolerant rice varieties where available.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -594,7 +594,7 @@ export const cropDiseaseDatabase = {
           description:
             "Start future crops with healthy seed or planting material from reliable sources.",
           costLevel: "variable",
-          estimatedCostUSD: null
+          estimatedCost: null
         },
 
         {
@@ -603,7 +603,7 @@ export const cropDiseaseDatabase = {
           description:
             "Clean tools and equipment when moving between affected and unaffected rice areas.",
           costLevel: "low",
-          estimatedCostUSD: null
+          estimatedCost: null
         }
       ],
 

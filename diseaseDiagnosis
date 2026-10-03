@@ -1,0 +1,703 @@
+// cropDiseaseDatabase.js
+//
+// DRC Crop Disease Database
+// Crops: Maize, Cassava, Rice
+//
+// IMPORTANT:
+// Image recognition provides a LIKELY diagnosis, not a confirmed diagnosis.
+// Costs should be populated from locally verified DRC prices.
+
+export const cropDiseaseDatabase = {
+
+  // ============================================================
+  // MAIZE
+  // ============================================================
+
+  maize: {
+
+    healthy: {
+      id: "maize_healthy",
+      name: "Healthy Maize",
+      type: "healthy",
+
+      symptoms: [
+        "Leaves are mostly uniform green",
+        "No major streaking, lesions, pustules, or wilting",
+        "Normal plant growth"
+      ],
+
+      diagnosisMessage:
+        "The maize plant appears healthy according to current image detection. No signs of the diseases currently recognized by this model were detected.",
+
+      treatments: [],
+
+      voiceMessage:
+        "Your maize appears healthy according to current image detection. Continue monitoring the crop for unusual spots, streaks, discoloration, or insect damage."
+    },
+
+
+    maize_streak_disease: {
+      id: "maize_streak_disease",
+      name: "Maize Streak Disease",
+      type: "viral",
+
+      symptoms: [
+        "Narrow yellow or white streaks running along the leaves",
+        "Streaks parallel to the leaf veins",
+        "Reduced leaf growth",
+        "Plant stunting",
+        "Reduced cob development in severe infections"
+      ],
+
+      diagnosisMessage:
+        "The maize plant shows signs consistent with Maize Streak Disease.",
+
+      curativeTreatment: false,
+
+      treatments: [
+        {
+          name: "Remove severely infected plants",
+          category: "field_management",
+          description:
+            "Remove severely affected plants where practical to reduce potential sources of infection.",
+          costLevel: "low",
+          estimatedCostUSD: "Labor intensive, but low-cost if done manually."
+        },
+
+        {
+          name: "Use resistant maize varieties",
+          category: "prevention",
+          description:
+            "For future planting, use locally adapted maize varieties with resistance or tolerance to maize streak disease.",
+          costLevel: "variable",
+          estimatedCostUSD: "7,700 - 10,000 CDF per kg of seed, depending on variety and local availability."
+        },
+      ],
+
+      voiceMessage:
+        "Your maize may have Maize Streak Disease. This is caused by a virus, so fungicides will not cure it. I can explain low-cost management options."
+    },
+
+
+    northern_leaf_blight: {
+      id: "northern_leaf_blight",
+      name: "Northern Leaf Blight",
+      type: "fungal",
+
+      symptoms: [
+        "Long cigar-shaped, spindle lesions",
+        "Gray-green lesions that later become tan or brown",
+        "Lesions may grow together",
+        "Large areas of leaves may die during severe infection"
+      ],
+
+      diagnosisMessage:
+        "The maize plant shows signs consistent with Northern Leaf Blight.",
+
+      curativeTreatment: "limited",
+
+      treatments: [
+        {
+          name: "Manage infected crop residue",
+          category: "field_management",
+          description:
+            "Manage infected maize residue after harvest to reduce disease carryover. This can be done by plowing under residue, removing it, or burning it where allowed.",
+          costLevel: "low",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Crop rotation",
+          category: "prevention",
+          description:
+            "Rotate maize with suitable non-host crops (root vegetables, legumes, etc.) when practical.",
+          costLevel: "variable",
+          estimatedCostUSD: "Costs depend on the crops chosen for rotation and local market prices. For example, legumes may cost 3,000 - 8,000 CDF per kg of seed (depending on the type of legume), while root vegetables may cost 1,100 - 5,000 CDF per kg of seed."
+        },
+
+        {
+          name: "Plant resistant varieties",
+          category: "prevention",
+          description:
+            "Use locally adapted maize varieties with resistance to Northern Leaf Blight.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Locally approved fungicide",
+          category: "chemical",
+          description:
+            "Fungicide may be considered when disease pressure and expected crop losses justify treatment. Only recommend products registered locally for maize and follow the product label.",
+          costLevel: "variable",
+          estimatedCostUSD: null,
+          requiresLocalVerification: true
+        }
+      ],
+
+      voiceMessage:
+        "Your maize may have Northern Leaf Blight. I can give you management options based on your field size and available resources."
+    },
+
+
+    common_rust: {
+      id: "common_rust",
+      name: "Common Rust",
+      type: "fungal",
+
+      symptoms: [
+        "Small raised reddish-brown pustules",
+        "Pustules appear on maize leaves",
+        "Pustules may occur on both sides of the leaf",
+        "Leaves may yellow when infection is severe"
+      ],
+
+      diagnosisMessage:
+        "The maize plant shows signs consistent with Common Rust.",
+
+      curativeTreatment: "limited",
+
+      treatments: [
+        {
+          name: "Monitor disease severity",
+          category: "field_management",
+          description:
+            "Monitor nearby maize plants and determine whether the disease is spreading significantly.",
+          costLevel: "free",
+          estimatedCostUSD: 0
+        },
+
+        {
+          name: "Plant resistant varieties",
+          category: "prevention",
+          description:
+            "Use locally adapted rust-resistant maize varieties in future planting.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Locally approved fungicide",
+          category: "chemical",
+          description:
+            "Fungicide may be considered for severe disease when economically justified. Use only a product registered locally for maize and follow its label.",
+          costLevel: "variable",
+          estimatedCostUSD: null,
+          requiresLocalVerification: true
+        }
+      ],
+
+      voiceMessage:
+        "Your maize may have Common Rust. Look for small reddish-brown raised spots on the leaves. I can explain your management options."
+    }
+  },
+
+
+  // ============================================================
+  // CASSAVA
+  // ============================================================
+
+  cassava: {
+
+    healthy: {
+      id: "cassava_healthy",
+      name: "Healthy Cassava",
+      type: "healthy",
+
+      symptoms: [
+        "Leaves are normally shaped",
+        "Leaves are mostly uniform green",
+        "No strong mosaic pattern",
+        "No major wilting or stem dieback"
+      ],
+
+      diagnosisMessage:
+        "The cassava plant appears healthy.",
+
+      treatments: [],
+
+      voiceMessage:
+        "Your cassava appears healthy. Continue monitoring the leaves, stems, and roots for unusual changes."
+    },
+
+
+    cassava_brown_streak_disease: {
+      id: "cassava_brown_streak_disease",
+      name: "Cassava Brown Streak Disease",
+      type: "viral",
+
+      symptoms: [
+        "Yellow or chlorotic patterns on leaves",
+        "Brown streaks on stems",
+        "Brown or dark necrotic areas inside storage roots",
+        "Root constrictions may occur",
+        "Plants may have severe root damage despite limited leaf symptoms"
+      ],
+
+      diagnosisMessage:
+        "The cassava plant shows signs consistent with Cassava Brown Streak Disease.",
+
+      curativeTreatment: false,
+
+      additionalPhotoRecommended: "root",
+
+      treatments: [
+        {
+          name: "Do not reuse infected cuttings",
+          category: "prevention",
+          description:
+            "Avoid using stems from symptomatic plants as planting material.",
+          costLevel: "free",
+          estimatedCostUSD: 0
+        },
+
+        {
+          name: "Use disease-free planting material",
+          category: "prevention",
+          description:
+            "Use healthy cassava cuttings from reliable sources.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Use resistant or tolerant varieties",
+          category: "prevention",
+          description:
+            "Use locally recommended cassava varieties with resistance or tolerance where available.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Remove infected plants",
+          category: "field_management",
+          description:
+            "Remove strongly symptomatic plants where recommended and practical to reduce sources of infection.",
+          costLevel: "low",
+          estimatedCostUSD: null
+        }
+      ],
+
+      voiceMessage:
+        "Your cassava may have Cassava Brown Streak Disease. This is a viral disease. Please also photograph the inside of an affected cassava root if possible."
+    },
+
+
+    cassava_bacterial_blight: {
+      id: "cassava_bacterial_blight",
+      name: "Cassava Bacterial Blight",
+      type: "bacterial",
+
+      symptoms: [
+        "Angular water-soaked leaf spots",
+        "Brown leaf lesions",
+        "Leaf wilting",
+        "Leaf drop",
+        "Shoot or stem dieback",
+        "Bacterial exudate may occur"
+      ],
+
+      diagnosisMessage:
+        "The cassava plant shows signs consistent with Cassava Bacterial Blight.",
+
+      curativeTreatment: "limited",
+
+      treatments: [
+        {
+          name: "Use clean planting material",
+          category: "prevention",
+          description:
+            "Do not propagate cassava using cuttings from plants showing bacterial blight symptoms.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Remove severely infected material",
+          category: "field_management",
+          description:
+            "Remove severely infected plants or plant material where practical.",
+          costLevel: "low",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Sanitize cutting tools",
+          category: "prevention",
+          description:
+            "Clean tools used to cut infected cassava before using them on healthy plants.",
+          costLevel: "low",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Plant resistant varieties",
+          category: "prevention",
+          description:
+            "Use locally adapted varieties with resistance or tolerance where available.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        }
+      ],
+
+      voiceMessage:
+        "Your cassava may have Cassava Bacterial Blight. Avoid using affected plants as planting material and clean cutting tools before using them on healthy plants."
+    },
+
+
+    cassava_mosaic_disease: {
+      id: "cassava_mosaic_disease",
+      name: "Cassava Mosaic Disease",
+      type: "viral",
+
+      symptoms: [
+        "Yellow and green mosaic pattern on leaves",
+        "Distorted leaves",
+        "Reduced leaf size",
+        "Leaf curling",
+        "Plant stunting"
+      ],
+
+      diagnosisMessage:
+        "The cassava plant shows signs consistent with Cassava Mosaic Disease.",
+
+      curativeTreatment: false,
+
+      treatments: [
+        {
+          name: "Remove severely infected plants",
+          category: "field_management",
+          description:
+            "Remove strongly symptomatic plants where appropriate to reduce sources of infection.",
+          costLevel: "low",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Do not reuse infected stems",
+          category: "prevention",
+          description:
+            "Do not take planting cuttings from cassava showing mosaic symptoms.",
+          costLevel: "free",
+          estimatedCostUSD: 0
+        },
+
+        {
+          name: "Use disease-free cuttings",
+          category: "prevention",
+          description:
+            "Use healthy planting material from reliable sources.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Plant resistant varieties",
+          category: "prevention",
+          description:
+            "Use locally recommended CMD-resistant cassava varieties where available.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        }
+      ],
+
+      voiceMessage:
+        "Your cassava may have Cassava Mosaic Disease. This disease is caused by a virus, so fungicides will not cure it. Avoid using affected plants for new cuttings."
+    }
+  },
+
+
+  // ============================================================
+  // RICE
+  // ============================================================
+
+  rice: {
+
+    healthy: {
+      id: "rice_healthy",
+      name: "Healthy Rice",
+      type: "healthy",
+
+      symptoms: [
+        "Leaves are mostly uniform green",
+        "Normal tillering",
+        "No major lesions or yellow mottling",
+        "Normal plant development"
+      ],
+
+      diagnosisMessage:
+        "The rice plant appears healthy.",
+
+      treatments: [],
+
+      voiceMessage:
+        "Your rice appears healthy. Continue monitoring your crop for unusual spots, yellowing, streaks, or wilting."
+    },
+
+
+    bacterial_leaf_blight: {
+      id: "bacterial_leaf_blight",
+      name: "Bacterial Leaf Blight",
+      type: "bacterial",
+
+      symptoms: [
+        "Water-soaked lesions near leaf tips or edges",
+        "Yellow lesions spreading along the leaf",
+        "Lesions may become grayish-white",
+        "Leaves may dry out",
+        "Young plants may wilt in severe cases"
+      ],
+
+      diagnosisMessage:
+        "The rice plant shows signs consistent with Bacterial Leaf Blight.",
+
+      curativeTreatment: "limited",
+
+      treatments: [
+        {
+          name: "Use resistant varieties",
+          category: "prevention",
+          description:
+            "Use locally recommended rice varieties resistant or tolerant to bacterial leaf blight.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Use healthy seed",
+          category: "prevention",
+          description:
+            "Plant healthy seed from reliable sources.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Avoid excessive nitrogen",
+          category: "field_management",
+          description:
+            "Avoid excessive nitrogen fertilizer, which can increase susceptibility to bacterial leaf blight.",
+          costLevel: "free",
+          estimatedCostUSD: 0
+        }
+      ],
+
+      voiceMessage:
+        "Your rice may have Bacterial Leaf Blight. I can explain management options and help estimate their cost."
+    },
+
+
+    rice_blast: {
+      id: "rice_blast",
+      name: "Rice Blast",
+      type: "fungal",
+
+      symptoms: [
+        "Diamond or spindle-shaped leaf lesions",
+        "Gray or whitish lesion centers",
+        "Brown or reddish lesion margins",
+        "Damage may occur on leaves, nodes, or panicles",
+        "Neck infection may prevent grain filling"
+      ],
+
+      diagnosisMessage:
+        "The rice plant shows signs consistent with Rice Blast.",
+
+      curativeTreatment: "limited",
+
+      treatments: [
+        {
+          name: "Use resistant varieties",
+          category: "prevention",
+          description:
+            "Plant locally adapted rice varieties with resistance to blast where available.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Avoid excessive nitrogen",
+          category: "field_management",
+          description:
+            "Avoid applying excessive nitrogen fertilizer because it can increase blast susceptibility.",
+          costLevel: "free",
+          estimatedCostUSD: 0
+        },
+
+        {
+          name: "Manage infected crop residue",
+          category: "field_management",
+          description:
+            "Manage infected rice residue according to locally appropriate practices.",
+          costLevel: "low",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Locally approved fungicide",
+          category: "chemical",
+          description:
+            "Where economically justified, an appropriately registered rice fungicide may be considered. Follow local recommendations and the product label.",
+          costLevel: "variable",
+          estimatedCostUSD: null,
+          requiresLocalVerification: true
+        }
+      ],
+
+      voiceMessage:
+        "Your rice may have Rice Blast. I can give you low-cost management options first and then explain other treatments if needed."
+    },
+
+
+    rice_yellow_mottle_disease: {
+      id: "rice_yellow_mottle_disease",
+      name: "Rice Yellow Mottle Disease",
+      type: "viral",
+
+      symptoms: [
+        "Yellow and green mottling of leaves",
+        "Yellowing of leaves",
+        "Plant stunting",
+        "Reduced tillering",
+        "Poor panicle development",
+        "Reduced grain production"
+      ],
+
+      diagnosisMessage:
+        "The rice plant shows signs consistent with Rice Yellow Mottle Disease.",
+
+      curativeTreatment: false,
+
+      treatments: [
+        {
+          name: "Remove severely infected plants",
+          category: "field_management",
+          description:
+            "Remove severely affected plants where appropriate to reduce potential sources of infection.",
+          costLevel: "low",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Use resistant varieties",
+          category: "prevention",
+          description:
+            "Use locally recommended RYMV-resistant or tolerant rice varieties where available.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Use healthy planting material",
+          category: "prevention",
+          description:
+            "Start future crops with healthy seed or planting material from reliable sources.",
+          costLevel: "variable",
+          estimatedCostUSD: null
+        },
+
+        {
+          name: "Clean agricultural tools",
+          category: "prevention",
+          description:
+            "Clean tools and equipment when moving between affected and unaffected rice areas.",
+          costLevel: "low",
+          estimatedCostUSD: null
+        }
+      ],
+
+      voiceMessage:
+        "Your rice may have Rice Yellow Mottle Disease. This is caused by a virus, so fungicides will not cure it. I can explain ways to limit its spread."
+    }
+  }
+};
+
+
+// ============================================================
+// LOOKUP FUNCTION
+// ============================================================
+
+export function getDiseaseInfo(crop, prediction) {
+  const cropData = cropDiseaseDatabase[crop];
+
+  if (!cropData) {
+    return {
+      success: false,
+      message: "Crop not supported."
+    };
+  }
+
+  const disease = cropData[prediction];
+
+  if (!disease) {
+    return {
+      success: false,
+      crop,
+      diagnosis: "Unknown",
+      message:
+        "The detected problem does not match a disease currently supported by this model."
+    };
+  }
+
+  return {
+    success: true,
+    crop,
+    ...disease
+  };
+}
+
+
+// ============================================================
+// PROCESS AI PREDICTION
+// ============================================================
+
+export function processPrediction(crop, prediction, confidence) {
+
+  // Example threshold — validate/calibrate this with your model.
+  const CONFIDENCE_THRESHOLD = 0.70;
+
+  if (confidence < CONFIDENCE_THRESHOLD) {
+    return {
+      success: false,
+      crop,
+      diagnosis: "Uncertain",
+      confidence: Math.round(confidence * 100),
+
+      message:
+        "I could not confidently identify the problem from this photo.",
+
+      voiceMessage:
+        "I am not confident enough to identify this problem. Please take another clear photo of the affected part of the plant."
+    };
+  }
+
+  const result = getDiseaseInfo(crop, prediction);
+
+  return {
+    ...result,
+    confidence: Math.round(confidence * 100)
+  };
+}
+
+
+// ============================================================
+// SIMPLE COST CALCULATOR
+// ============================================================
+
+export function calculateTreatmentCost({
+  pricePerUnit,
+  unitsNeeded,
+  laborCost = 0,
+  transportCost = 0
+}) {
+
+  const inputCost = pricePerUnit * unitsNeeded;
+
+  return {
+    inputCost,
+    laborCost,
+    transportCost,
+    totalCost: inputCost + laborCost + transportCost
+  };
+}

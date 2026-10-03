@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(const PlantApp());
@@ -54,6 +56,42 @@ class Observation {
     this.region = 'Kwilu', this.synced = false, DateTime? time})
       : time = time ?? DateTime.now();
 }
+
+class Diagnosis {
+  final String crop, disease;
+  final int confidence;
+  final List<String> steps;
+  const Diagnosis(this.crop, this.disease, this.confidence, this.steps);
+  bool get isHealthy => disease == 'Healthy';
+}
+
+// Fake for now. Swap the body for a real model later; the UI won't change.
+Future<Diagnosis> classify(Uint8List bytes) async {
+  await Future.delayed(const Duration(milliseconds: 900));
+  const options = [
+    Diagnosis('Cassava', 'Cassava Mosaic Disease', 94, [
+      'Remove infected plants.',
+      'Keep infected material away from healthy plants.',
+      'Monitor nearby cassava plants for symptoms.',
+    ]),
+    Diagnosis('Maize', 'Maize Leaf Blight', 88, [
+      'Remove badly affected leaves.',
+      'Avoid working in the field when leaves are wet.',
+      'Rotate crops next season.',
+    ]),
+    Diagnosis('Rice', 'Rice Blast', 81, [
+      'Avoid too much nitrogen fertilizer.',
+      'Keep water levels steady.',
+      'Report to your extension officer.',
+    ]),
+    Diagnosis('Cassava', 'Healthy', 97, [
+      'No action needed.',
+      'Keep checking your plants regularly.',
+    ]),
+  ];
+  return options[bytes.length % options.length]; // varies per photo
+}
+
 // ─────────────────────────────────────────────
 // HOME SCREEN
 // ─────────────────────────────────────────────
@@ -552,14 +590,19 @@ class ScannerScreen extends StatelessWidget {
   const ScannerScreen({super.key});
 
   // in ScannerScreen
-  Future<void> showFakeDiagnosis(BuildContext context) async {
+  Future<void> capture(BuildContext context) async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (picked == null) return;
+    final bytes = await picked.readAsBytes();
+    final diagnosis = await classify(bytes);
+    if (!context.mounted) return;
     final result = await Navigator.push<Observation>(
       context,
-      MaterialPageRoute(builder: (_) => const DiagnosisScreen()),
+      MaterialPageRoute(
+        builder: (_) => DiagnosisScreen(imageBytes: bytes, diagnosis: diagnosis),
+      ),
     );
-    if (result != null && context.mounted) {
-      Navigator.pop(context, result);
-    }
+    if (result != null && context.mounted) Navigator.pop(context, result);
   }
 
   @override
@@ -631,7 +674,7 @@ class ScannerScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 58,
                   child: ElevatedButton.icon(
-                    onPressed: () => showFakeDiagnosis(context),
+                    onPressed: () => capture(context),
                     icon: const Icon(Icons.camera_alt_rounded),
                     label: const Text(
                       'CAPTURE',
@@ -662,7 +705,14 @@ class ScannerScreen extends StatelessWidget {
 // ─────────────────────────────────────────────
 
 class DiagnosisScreen extends StatefulWidget {
-  const DiagnosisScreen({super.key});
+  final Uint8List imageBytes;
+  final Diagnosis diagnosis;
+
+  const DiagnosisScreen({
+    super.key,
+    required this.imageBytes,
+    required this.diagnosis,
+  });
 
   @override
   State<DiagnosisScreen> createState() => _DiagnosisScreenState();
@@ -675,9 +725,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
     await tts.setLanguage('en-US');
     await tts.setSpeechRate(0.45);
     await tts.speak(
-      'Cassava Mosaic Disease detected. '
-      'Remove infected plants and keep infected material '
-      'away from healthy plants. Monitor nearby cassava plants.',
+      '${widget.diagnosis.disease} detected. ${widget.diagnosis.steps.join(' ')}',
     );
   }
 
@@ -685,9 +733,9 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
     Navigator.pop(
       context,
       Observation(
-        crop: 'Cassava',
-        disease: 'Cassava Mosaic Disease',
-        confidence: 94,
+        crop: widget.diagnosis.crop,
+        disease: widget.diagnosis.disease,
+        confidence: widget.diagnosis.confidence,
       ),
     );
 
@@ -718,25 +766,19 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              height: 220,
-              decoration: BoxDecoration(
-                color: const Color(0xFFDCE8DC),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.local_florist_rounded,
-                  color: forestGreen,
-                  size: 90,
-                ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Image.memory(
+                widget.imageBytes,
+                height: 220,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 25),
-            const Text(
-              'CASSAVA',
-              style: TextStyle(
+            Text(
+              widget.diagnosis.crop.toUpperCase(),
+              style: const TextStyle(
                 color: mutedText,
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -744,9 +786,9 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
               ),
             ),
             const SizedBox(height: 7),
-            const Text(
-              'Cassava Mosaic Disease',
-              style: TextStyle(
+            Text(
+              widget.diagnosis.disease,
+              style: const TextStyle(
                 color: darkText,
                 fontSize: 27,
                 fontWeight: FontWeight.w700,
@@ -764,9 +806,9 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                     color: const Color(0xFFE4F0E4),
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: const Text(
-                    '94% confidence',
-                    style: TextStyle(
+                  child: Text(
+                    '${widget.diagnosis.confidence}% confidence',
+                    style: const TextStyle(
                       color: forestGreen,
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
@@ -799,17 +841,8 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
               ),
             ),
             const SizedBox(height: 13),
-            _recommendation(
-              '1',
-              'Remove infected plants.',
-            ),
-            _recommendation(
-              '2',
-              'Keep infected material away from healthy plants.',
-            ),
-            _recommendation(
-              '3',
-              'Monitor nearby cassava plants for symptoms.',
+            ...widget.diagnosis.steps.asMap().entries.map(
+              (e) => _recommendation('${e.key + 1}', e.value),
             ),
             const SizedBox(height: 22),
             SizedBox(

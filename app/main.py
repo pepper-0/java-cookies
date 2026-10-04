@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 WEIGHTS_PATH = Path(
     os.environ.get(
         "CROP_MODEL_WEIGHTS",
-        str(BASE_DIR / "models" / "mobilenetv3_crop_diseases.pth"),
+        str(BASE_DIR / "weights" / "mobilenetv3_crop_diseases.pth"),
     )
 )
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -29,7 +29,7 @@ async def lifespan(application: FastAPI):
     if not WEIGHTS_PATH.is_file():
         raise FileNotFoundError(
             f"Model weights not found at {WEIGHTS_PATH}. "
-            "Place mobilenetv3_crop_diseases.pth in the models/ directory "
+            "Place mobilenetv3_crop_diseases.pth in the weights/ directory "
             "or set CROP_MODEL_WEIGHTS."
         )
 

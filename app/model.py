@@ -7,18 +7,19 @@ import torch
 from PIL import Image
 from torchvision import models, transforms
 
-# Keep this in the alphabetical order used by torchvision.datasets.ImageFolder
-# in the recorded nine-class training run in java_cookies.ipynb.
+# This order must match the ImageFolder class-to-index mapping used to train
+# the checkpoint; a state_dict does not include the class names.
 CLASS_NAMES = [
     "cassava_bacterial_blight",
+    "cassava_brown_streak_disease",
+    "cassava_healthy",
     "cassava_mosaic_disease",
     "maize_common_rust",
+    "maize_healthy",
     "maize_northern_leaf_blight",
     "maize_streak_disease",
-    "rice_bacterial_blight",
     "rice_blast",
     "rice_healthy",
-    "rice_yellow_mottle_disease",
 ]
 
 _PREPROCESS = transforms.Compose(

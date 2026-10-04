@@ -6,9 +6,8 @@ float32 TFLite model:
 - `weights/mobilenetv3_crop_diseases.pth`
 - `weights/mobilenetv3_crop_diseases.float32.tflite`
 
-The mobile app still uses `src/ml/mockClassifier.ts`. This document defines the
-contract that the on-device classifier must follow when the TFLite runtime is
-added.
+The mobile app loads the model through `react-native-fast-tflite` and implements
+the on-device pipeline in `src/ml/tfliteClassifier.ts`.
 
 ## Trained output order
 
@@ -47,38 +46,44 @@ low-confidence or unsupported results; they are not extra model logits.
   `[0.229, 0.224, 0.225]`;
 - output name: `output_1`;
 - output type and shape: float32 logits `[1, 10]`;
-- postprocessing: apply softmax, select the highest probability, and resolve
-  its numeric index through `src/ml/labels.json`;
+- postprocessing: apply softmax, sum probabilities by crop, choose the winning
+  crop group, and resolve that group's strongest output through
+  `src/ml/labels.json`;
 - fallback: after selecting or deriving the crop, return its crop-specific
   unknown diagnosis when confidence is below the threshold selected during
   validation or when that crop is not fully supported.
 
+The current prototype thresholds are 0.60 for the summed crop probability and
+0.50 for the winning disease probability. They must be calibrated against
+held-out cassava and maize photos before production use. If the rice probability
+group wins, the classifier always returns `rice_unsupported` rather than a rice
+disease result.
+
 The source PyTorch model accepts NCHW `[1, 3, 224, 224]`. The converted TFLite
 file exposes NHWC, so the mobile implementation must follow the TFLite shape.
 
-## Integration checklist
+## Integration status
 
-1. Copy `weights/mobilenetv3_crop_diseases.float32.tflite` to
-   `mobile/assets/models/`.
-2. Add `tflite` to Metro's `resolver.assetExts`.
-3. Install an Expo-compatible React Native TFLite runtime and its native
-   dependencies.
-4. Implement RGB image decoding, resizing, normalization, inference, softmax,
-   and label lookup behind `src/ml/classifier.ts`.
-5. Keep the screens and storage layer dependent only on `ImageClassifier` and
-   `DiagnosisResult`.
-6. Build a custom Expo development client; native TFLite libraries do not run
-   in Expo Go.
-7. Test all four cassava classes, all four maize classes, and low-confidence or
-   unsupported-crop fallback cases on the target Android emulator or device.
+- [x] Bundled the float32 model under `mobile/assets/models/`.
+- [x] Added `.tflite` to Metro's asset extensions.
+- [x] Installed the CPU TFLite runtime and Expo development client.
+- [x] Implemented JPEG decoding, 224×224 RGB resizing, ImageNet normalization,
+  inference, softmax, crop grouping, and label lookup.
+- [x] Added cassava/maize unknown handling and an unsupported-rice result.
+- [x] Compile the custom Android development build with the native TFLite and
+  Nitro libraries. These libraries do not run in Expo Go.
+- [ ] Install the development build on an Android emulator.
+- [ ] Test every cassava and maize class plus unknown and unsupported-rice paths
+  on the target Android emulator or device.
+- [ ] Calibrate the confidence thresholds using held-out images.
 
 ## Offline guidance
 
-`guidance.en.json` and `guidance.fr.json` contain the full 15-record crop
-guidance catalog. The ten real model outputs and all three crop-specific unknown
-fallbacks have guidance entries. Keeping the two currently untrained rice
-disease entries is intentional and allows a later model version to use them
-without changing the guidance schema.
+`guidance.en.json` and `guidance.fr.json` contain 16 crop guidance records. The
+ten real model outputs, all three crop-specific unknown fallbacks, and
+`rice_unsupported` have guidance entries. Keeping the two currently untrained
+rice disease entries is intentional and allows a later model version to use
+them without changing the guidance schema.
 
 The guidance is prototype content. Agricultural guidance, treatment details,
 and estimated costs require review by appropriate DRC agricultural experts

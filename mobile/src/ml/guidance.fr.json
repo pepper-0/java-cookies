@@ -533,6 +533,38 @@
       ],
       "voiceMessage": "Votre riz pourrait être atteint de panachure jaune. Cette maladie est causée par un virus; les fongicides ne la guériront donc pas. Je peux expliquer comment limiter sa propagation."
     },
+    "rice_unsupported": {
+      "id": "rice_unsupported",
+      "name": "Diagnostic du riz non pris en charge",
+      "type": "unsupported",
+      "symptoms": [],
+      "diagnosisMessage": "Le modèle a regroupé cette photo avec le riz, mais cette version ne peut pas fournir un diagnostic complet du riz, car deux maladies définies ne sont pas incluses dans le modèle.",
+      "treatments": [
+        {
+          "name": "Ne pas se fier à ce résultat",
+          "category": "diagnosis_support",
+          "description": "Ne traitez pas et ne retirez pas les plants de riz sur la base de ce résultat non pris en charge.",
+          "costLevel": null,
+          "estimatedCost": null
+        },
+        {
+          "name": "Prendre d’autres photos du riz",
+          "category": "diagnosis_support",
+          "description": "Prenez des photos nettes du plant de riz entier, des deux faces des feuilles, de la base de la tige et de la panicule lorsqu’elle est présente afin qu’un spécialiste puisse les examiner.",
+          "costLevel": null,
+          "estimatedCost": null
+        },
+        {
+          "name": "Demander une inspection locale",
+          "category": "expert_support",
+          "description": "Demandez à un agent de vulgarisation local d’inspecter le riz avant de choisir un traitement.",
+          "costLevel": null,
+          "estimatedCost": null,
+          "requiresLocalVerification": true
+        }
+      ],
+      "voiceMessage": "Cette photo semble montrer du riz, mais le modèle actuel ne prend pas en charge un diagnostic complet du riz. Demandez à un agent de vulgarisation local d’inspecter la culture avant tout traitement."
+    },
     "rice_unknown": {
       "id": "rice_unknown",
       "name": "Affection inconnue du riz",

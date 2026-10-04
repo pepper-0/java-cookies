@@ -16,6 +16,7 @@ const codeTranslationKeys: Record<string, TranslationKey> = {
   fungal: 'code.fungal',
   bacterial: 'code.bacterial',
   unknown: 'code.unknown',
+  unsupported: 'code.unsupported',
   field_management: 'code.field_management',
   prevention: 'code.prevention',
   chemical: 'code.chemical',

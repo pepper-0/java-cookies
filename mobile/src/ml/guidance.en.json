@@ -533,6 +533,38 @@
       ],
       "voiceMessage": "Your rice may have Rice Yellow Mottle Disease. This is caused by a virus, so fungicides will not cure it. I can explain ways to limit its spread."
     },
+    "rice_unsupported": {
+      "id": "rice_unsupported",
+      "name": "Rice Diagnosis Not Supported",
+      "type": "unsupported",
+      "symptoms": [],
+      "diagnosisMessage": "The model grouped this photo as rice, but this checkpoint cannot provide a complete rice diagnosis because two defined rice disease classes are not included in the model.",
+      "treatments": [
+        {
+          "name": "Do not rely on this model result",
+          "category": "diagnosis_support",
+          "description": "Do not treat or remove rice plants based on this unsupported result.",
+          "costLevel": null,
+          "estimatedCost": null
+        },
+        {
+          "name": "Take additional rice photos",
+          "category": "diagnosis_support",
+          "description": "Take clear photos of the whole rice plant, both leaf surfaces, stem base, and panicle when present for review by an expert.",
+          "costLevel": null,
+          "estimatedCost": null
+        },
+        {
+          "name": "Request local inspection",
+          "category": "expert_support",
+          "description": "Ask a local extension agent to inspect the rice before choosing any treatment.",
+          "costLevel": null,
+          "estimatedCost": null,
+          "requiresLocalVerification": true
+        }
+      ],
+      "voiceMessage": "This photo appears to show rice, but the current model does not support a complete rice diagnosis. Ask a local extension agent to inspect the crop before applying treatment."
+    },
     "rice_unknown": {
       "id": "rice_unknown",
       "name": "Unknown Rice Condition",

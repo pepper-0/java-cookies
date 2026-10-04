@@ -79,7 +79,9 @@
 - [x] Documented ImageNet RGB scaling and normalization plus softmax and label-lookup postprocessing.
 - [x] Confirmed complete four-class coverage for the cassava and maize demonstration crops.
 - [ ] Select and validate crop-specific confidence thresholds and unknown behavior using held-out cassava and maize images.
-- [ ] Integrate the TFLite runtime, asset bundling, image preprocessing, and postprocessing into the Expo development build.
+- [x] Integrated the TFLite runtime, bundled asset, image preprocessing, crop grouping, cassava/maize results, crop-specific unknowns, and unsupported-rice result into the Expo source.
+- [x] Compile the custom Expo Android development build with the bundled TFLite and Nitro native modules.
+- [ ] Install the development build on an Android emulator and run a manual inference walkthrough.
 - [ ] Add the two missing rice disease classes and retrain before claiming complete rice coverage.
 
 ## Diagnosis Result Image Follow-up
@@ -96,7 +98,7 @@
 ## Local Diagnosis Guidance
 
 - [x] Added a versioned English JSON template using the disease diagnosis record schema.
-- [x] Added complete database-backed entries for all 15 `diagnosis_id` values plus a same-schema fallback for future unknown IDs.
+- [x] Added complete database-backed entries for the 15 crop diagnosis IDs, the unsupported-rice result, and a same-schema fallback for future unknown IDs.
 - [x] Replaced the hardcoded result advice with an offline lookup keyed by `diagnosis_id`.
 - [x] Updated the result screen to render symptoms, structured treatments, cost metadata, local-verification warnings, and the field summary.
 - [x] Added contract validation for the exact ten model outputs, all three crop-specific unknown fallbacks, matching English/French catalogs, and complete database-schema fields for every guidance entry.
@@ -110,7 +112,7 @@
 - [x] Added a persistent offline localization provider with English fallback and French support.
 - [x] Connected navigation, onboarding, farm profile, diagnosis, result, synchronization, settings, shared selectors, accessibility labels, and status badges to translated strings.
 - [x] Limited the app-interface selector to the currently supported English and French locales while retaining all preferred-language choices in the farm profile.
-- [x] Added a complete French guidance catalog with the same 15 diagnosis records and schema as the English catalog.
+- [x] Added a complete French guidance catalog with the same 16 diagnosis records and schema as the English catalog.
 - [x] Added cross-locale contract validation for diagnosis coverage, symptom counts, treatment counts, types, and treatment categories.
 - [ ] Have a native French speaker and DRC agricultural expert review terminology, treatment guidance, and prices.
 - [ ] Confirm English/French switching and all translated layouts in the Android emulator.

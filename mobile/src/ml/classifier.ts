@@ -1,4 +1,4 @@
-import { mockClassifier } from './mockClassifier';
+import { tfliteClassifier } from './tfliteClassifier';
 
 export type DiagnosisResult = {
   diagnosis_id: string;
@@ -10,9 +10,8 @@ export interface ImageClassifier {
   classifyImage(imageUri: string): Promise<DiagnosisResult>;
 }
 
-// Replace this adapter when the TFLite runtime and preprocessing pipeline are installed.
 // Screens and storage depend only on ImageClassifier and DiagnosisResult, never on an ML runtime.
-const activeClassifier: ImageClassifier = mockClassifier;
+const activeClassifier: ImageClassifier = tfliteClassifier;
 
 export function classifyImage(imageUri: string) {
   return activeClassifier.classifyImage(imageUri);

@@ -1,3 +1,4 @@
+import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -50,6 +51,15 @@ export default function DiagnoseScreen() {
     if (!result.canceled && result.assets[0]) await handleSelectedUri(result.assets[0].uri);
   }
 
+  async function choosePhotoFromFiles() {
+    const result = await DocumentPicker.getDocumentAsync({
+      copyToCacheDirectory: true,
+      multiple: false,
+      type: 'image/*',
+    });
+    if (!result.canceled && result.assets[0]) await handleSelectedUri(result.assets[0].uri);
+  }
+
   async function analyze() {
     if (!imageUri) return;
     try {
@@ -95,6 +105,12 @@ export default function DiagnoseScreen() {
             <ActionButton disabled={working} label={t('diagnose.choosePhoto')} onPress={choosePhoto} tone="quiet" />
           </View>
         </View>
+        <ActionButton
+          disabled={working}
+          label={t('diagnose.chooseFromFiles')}
+          onPress={choosePhotoFromFiles}
+          tone="quiet"
+        />
       </Card>
 
       <ActionButton

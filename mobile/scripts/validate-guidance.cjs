@@ -21,7 +21,12 @@ const expectedOutputIds = [
 ];
 const mappedDiagnosisIds = [...new Set(classIds)];
 const fallbackDiagnosisIds = ['cassava_unknown', 'maize_unknown', 'rice_unknown'];
-const requiredGuidanceIds = [...mappedDiagnosisIds, ...fallbackDiagnosisIds];
+const unsupportedDiagnosisIds = ['rice_unsupported'];
+const requiredGuidanceIds = [
+  ...mappedDiagnosisIds,
+  ...fallbackDiagnosisIds,
+  ...unsupportedDiagnosisIds,
+];
 
 assert.deepEqual(catalogs.map((catalog) => catalog.locale), ['en', 'fr']);
 assert.deepEqual(
@@ -88,7 +93,8 @@ for (const diagnosisId of Object.keys(englishGuidance.diagnoses)) {
 }
 
 console.log(
-  `Validated ${classIds.length} model outputs and ${fallbackDiagnosisIds.length} crop fallbacks ` +
+  `Validated ${classIds.length} model outputs, ${fallbackDiagnosisIds.length} crop fallbacks, ` +
+    `and ${unsupportedDiagnosisIds.length} unsupported result ` +
     `against ${Object.keys(englishGuidance.diagnoses).length} guidance records in ${catalogs.length} locales.`,
 );
 

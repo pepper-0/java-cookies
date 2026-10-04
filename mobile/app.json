@@ -39,7 +39,8 @@
             "usesCleartextTraffic": true
           }
         }
-      ]
+      ],
+      "react-native-fast-tflite"
     ]
   }
 }

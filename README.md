@@ -1,62 +1,91 @@
-# java-cookies
-wow we are so locked in!!
+# LimaDRC
 
-Hi, I'm Zion
+LimaDRC is an offline-first Android agriculture prototype for smallholder
+farmers in the Democratic Republic of the Congo. It combines crop-disease
+screening, local field guidance, farmer and farm records, synchronization, and
+demonstration market prices in an English/French Expo application.
 
-this is jana
+The application is designed to keep working when connectivity is unreliable.
+Profiles and diagnosis metadata are stored in SQLite on the device and remain
+`PENDING` until the local FastAPI service confirms synchronization. Crop photos
+are used transiently by the diagnosis flow and are not stored in observation
+records or sent by the synchronization API.
 
-evelynnnn
+## Current status
 
-anna is here
+Implemented:
 
-## Folder Structure
+- Expo SDK 57 / React Native Android application using Expo Router;
+- first-run farm setup and onboarding;
+- English and French interface localization;
+- camera and gallery image selection with a diagnosis-result preview;
+- an isolated asynchronous classifier interface with a mock implementation;
+- English and French offline disease guidance keyed by `diagnosis_id`;
+- local SQLite farmer, farm, observation, settings, and sync state;
+- FastAPI synchronization endpoints backed by SQLite;
+- static, clearly labeled demonstration market prices; and
+- a trained 10-output MobileNetV3-Large model in PyTorch and TFLite formats.
 
+Not yet implemented:
 
-The workspace contains two folders by default, where:
+- on-device TFLite execution—the mobile app still uses the mock classifier;
+- a calibrated production confidence threshold;
+- live market-price, registry, mapping, notification, or speech services; and
+- production review of agricultural guidance and French terminology.
 
+## Repository layout
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+| Path | Purpose |
+| --- | --- |
+| `mobile/` | Expo/React Native application |
+| `backend/` | Local synchronization API and its tests |
+| `app/` | Optional PyTorch/FastAPI image-inference service |
+| `weights/` | Trained `.pth` and converted `.tflite` files |
+| `java_cookies.ipynb` | Training and TFLite conversion notebook |
+| `mobile/src/ml/` | Classifier contract, label mapping, and offline guidance |
 
+The synchronization API in `backend/` and the optional model API in `app/` are
+separate services. The planned mobile integration will run the TFLite model on
+the Android device rather than upload crop photos to either service.
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+## Model contract
 
+The trained MobileNetV3-Large model emits ten logits in this fixed order:
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+| Output | Trained class |
+| ---: | --- |
+| 0 | `cassava_bacterial_blight` |
+| 1 | `cassava_brown_streak_disease` |
+| 2 | `cassava_healthy` |
+| 3 | `cassava_mosaic_disease` |
+| 4 | `maize_common_rust` |
+| 5 | `maize_healthy` |
+| 6 | `maize_northern_leaf_blight` |
+| 7 | `maize_streak_disease` |
+| 8 | `rice_blast` |
+| 9 | `rice_healthy` |
 
+Cassava and maize each have their complete four-class set and are the fully
+supported demonstration crops. Rice is only partially covered: the checkpoint
+does not contain `rice_bacterial_leaf_blight` or
+`rice_yellow_mottle_disease`. Crop-specific unknown results are application
+fallbacks for low-confidence or unsupported results, not trained logits.
 
-## Dependency Management
+The TFLite file accepts one RGB float32 image in NHWC shape
+`[1, 224, 224, 3]`. Pixel values must be scaled to 0-1 and normalized with
+ImageNet mean `[0.485, 0.456, 0.406]` and standard deviation
+`[0.229, 0.224, 0.225]`. It returns float32 logits with shape `[1, 10]`.
+See `mobile/src/ml/model/README.md` for the complete mobile handoff contract.
 
+## Requirements
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+- Node.js 22.13 or newer
+- Android Studio with an Android emulator
+- Python 3.11 or newer for the synchronization backend
 
-|||||||
+## Start the synchronization backend
 
-Zion's part 
-# LimaDRC App Shell
-
-Checkpoint implementation of an offline-first Android agriculture app for smallholder farmers in the DRC. The repository deliberately stops before real image-model integration and live market, speech, or mapping services.
-
-## What is implemented
-
-- Expo and React Native Android application with Expo Router
-- Home, Diagnose, Result, My Farm, and Sync Status screens
-- Android camera and gallery photo selection
-- isolated asynchronous mock classifier contract
-- MobileNetV3Small training, evaluation, and TFLite-export scaffold awaiting image datasets
-- offline market-price screen with clearly labeled static demonstration prices
-- offline SQLite observation records without retaining crop photos or image URLs
-- locally saved farmer, farm, and observation data
-- explicit `PENDING` to `SYNCED` queue behavior
-- FastAPI health, farmer, farm, and observation endpoints
-- idempotent backend writes backed by SQLite
-- editable backend address for emulator and physical-device testing
-
-## INSTALL AN ANDROID STUDIO EMULATOR FIRST TO RUN THIS APP
-
-## Start the backend
-
-Open a terminal at the repository root and run:
+From the repository root:
 
 ```bash
 cd backend
@@ -66,21 +95,18 @@ python -m pip install -r requirements.txt
 python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-The commands do the following:
+These commands enter the backend directory, create and activate an isolated
+Python environment, install the pinned dependencies, and start the development
+server. Keep the process running while testing synchronization. Press
+`Control-C` to stop it.
 
-- `cd backend` moves the terminal into the backend project directory.
-- `python3 -m venv .venv` creates an isolated Python environment in `backend/.venv`. It is ignored by Git.
-- `source .venv/bin/activate` makes that environment active in the current terminal. Run it again whenever you open a new terminal for the backend.
-- `python -m pip install -r requirements.txt` installs the pinned FastAPI server and test dependencies into the active environment.
-- `python -m uvicorn main:app ...` loads the `app` object from `backend/main.py` and starts the API. `--host 0.0.0.0` allows a phone on the same network to reach it, `--port 8000` selects the port, and `--reload` restarts the server after Python file changes.
+The Android emulator reaches the host computer at `http://10.0.2.2:8000`, which
+is the app's default backend address. A physical device must use the development
+computer's LAN address instead.
 
-Leave this process running while using the app. Press `Control-C` to stop it.
+## Start the Android application
 
-## Start the Android app
-
-Expo SDK 57 requires Node.js 22.13 or newer.
-
-Open a second terminal at the repository root and run:
+Open a second terminal at the repository root:
 
 ```bash
 cd mobile
@@ -88,23 +114,38 @@ npm install
 npm run android
 ```
 
-- `cd mobile` moves the terminal into the Expo application directory.
-- `npm install` installs the versions recorded in `mobile/package-lock.json` into the ignored `mobile/node_modules` directory.
-- `npm run android` starts the Expo development server and attempts to open the app on a connected Android emulator or device. Keep this process running during development and press `Control-C` to stop it.
+`npm install` installs the versions recorded in `mobile/package-lock.json`.
+`npm run android` starts Metro and attempts to open LimaDRC in a connected
+Android emulator.
 
-The default backend address is `http://10.0.2.2:8000`, which is correct for the Android emulator. On a physical phone, open **Sync status** and replace it with the computer's LAN address.
+## Validate the project
 
-## Checkpoint demo
+Run the mobile checks from `mobile/`:
 
-1. Start the backend.
-2. Launch the Android app and optionally save a farmer in **My farm**.
-3. Open **Diagnose crop**, take or select a cassava photo, and run the mock diagnosis.
-4. Save the observation. Its diagnosis metadata is stored locally as `PENDING`; the crop photo is not retained.
-5. Open **Sync status**. It shows the pending-record count.
-6. Test the backend connection, then tap **Sync now**.
-7. The backend confirms each POST and the app changes the local records to `SYNCED`.
-8. Stop the backend and repeat a save to verify that a failed sync leaves the local record `PENDING`.
+```bash
+npm run validate:guidance
+npm run typecheck
+npm run lint
+npm run doctor
+```
 
-## Intentional stopping point
+Run the backend tests from `backend/` with its virtual environment activated:
 
-There is no trained TFLite or ONNX model, TTS, live market-price provider, or production registry integration. The bundled prices are invented demonstration values and must not be used for real transactions. The dataset-ready training pipeline is documented in `mobilenetv3-training/README.md`, and the future app adapter is documented in `mobile/src/ml/model/README.md`.
+```bash
+python -m pytest -q
+```
+
+## Next model-integration step
+
+Before replacing the mock classifier, copy the TFLite file into the mobile
+assets, configure Metro to bundle `.tflite`, install a compatible native
+runtime, implement the documented preprocessing and postprocessing contract,
+and create a custom Expo development build. Native TFLite modules cannot run in
+Expo Go.
+
+## Prototype limitations
+
+Diagnosis and agricultural guidance are demonstration features and are not a
+substitute for confirmation by a qualified agricultural extension professional.
+Market prices are invented static values and must not be used for real buying or
+selling decisions.

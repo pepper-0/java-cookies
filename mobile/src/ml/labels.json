@@ -3,10 +3,10 @@
   "1": "cassava_brown_streak_disease",
   "2": "cassava_healthy",
   "3": "cassava_mosaic_disease",
-  "4": "cassava_unknown",
-  "5": "cassava_unknown",
-  "6": "cassava_unknown",
-  "7": "cassava_unknown",
-  "8": "cassava_unknown",
-  "9": "cassava_unknown"
+  "4": "maize_common_rust",
+  "5": "maize_healthy",
+  "6": "maize_northern_leaf_blight",
+  "7": "maize_streak_disease",
+  "8": "rice_blast",
+  "9": "rice_healthy"
 }

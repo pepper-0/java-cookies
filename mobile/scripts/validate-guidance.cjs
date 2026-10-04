@@ -7,14 +7,41 @@ const catalogs = [
 const labels = require('../src/ml/labels.json');
 
 const classIds = Object.values(labels);
+const expectedOutputIds = [
+  'cassava_bacterial_blight',
+  'cassava_brown_streak_disease',
+  'cassava_healthy',
+  'cassava_mosaic_disease',
+  'maize_common_rust',
+  'maize_healthy',
+  'maize_northern_leaf_blight',
+  'maize_streak_disease',
+  'rice_blast',
+  'rice_healthy',
+];
+const mappedDiagnosisIds = [...new Set(classIds)];
+const fallbackDiagnosisIds = ['cassava_unknown', 'maize_unknown', 'rice_unknown'];
+const requiredGuidanceIds = [...mappedDiagnosisIds, ...fallbackDiagnosisIds];
+
 assert.deepEqual(catalogs.map((catalog) => catalog.locale), ['en', 'fr']);
+assert.deepEqual(
+  Object.keys(labels),
+  expectedOutputIds.map((_, index) => String(index)),
+  'Model labels must define consecutive output indexes 0 through 9.',
+);
+assert.deepEqual(
+  classIds,
+  expectedOutputIds,
+  'Model labels must preserve the trained 10-output order.',
+);
 
 for (const guidance of catalogs) {
-  assert.deepEqual(
-    Object.keys(guidance.diagnoses),
-    classIds,
-    `${guidance.locale} guidance diagnoses must match the model class IDs and order.`,
-  );
+  for (const diagnosisId of requiredGuidanceIds) {
+    assert.ok(
+      guidance.diagnoses[diagnosisId],
+      `${guidance.locale} guidance must include model or fallback diagnosis ${diagnosisId}.`,
+    );
+  }
 
   validateDiagnosis(guidance.template, `${guidance.locale}.template`);
   validateDiagnosis(guidance.fallback, `${guidance.locale}.fallback`);
@@ -31,7 +58,13 @@ for (const guidance of catalogs) {
 
 const [englishGuidance, frenchGuidance] = catalogs;
 assert.equal(frenchGuidance.version, englishGuidance.version, 'Catalog versions must match.');
-for (const diagnosisId of classIds) {
+assert.deepEqual(
+  Object.keys(frenchGuidance.diagnoses),
+  Object.keys(englishGuidance.diagnoses),
+  'English and French catalogs must contain the same diagnosis IDs and order.',
+);
+
+for (const diagnosisId of Object.keys(englishGuidance.diagnoses)) {
   const englishDiagnosis = englishGuidance.diagnoses[diagnosisId];
   const frenchDiagnosis = frenchGuidance.diagnoses[diagnosisId];
   assert.equal(
@@ -54,7 +87,10 @@ for (const diagnosisId of classIds) {
   });
 }
 
-console.log(`Validated ${classIds.length} diagnosis guidance records in ${catalogs.length} locales.`);
+console.log(
+  `Validated ${classIds.length} model outputs and ${fallbackDiagnosisIds.length} crop fallbacks ` +
+    `against ${Object.keys(englishGuidance.diagnoses).length} guidance records in ${catalogs.length} locales.`,
+);
 
 function validateDiagnosis(diagnosis, path) {
   for (const field of ['id', 'name', 'type', 'diagnosisMessage', 'voiceMessage']) {

@@ -1,0 +1,12 @@
+# Python bytecode and virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local environment variables and editor files
+.env
+.vscode/
+
+# Notebook checkpoints
+.ipynb_checkpoints/

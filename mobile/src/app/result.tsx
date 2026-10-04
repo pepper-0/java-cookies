@@ -1,7 +1,7 @@
 import * as Speech from 'expo-speech';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Screen } from '@/components/ui';
@@ -82,14 +82,8 @@ export default function ResultScreen() {
     };
   }, [db]);
 
-  function handleSpeak() {
+  const startSpeaking = useCallback(() => {
     if (!spokenText) return;
-
-    if (isSpeaking) {
-      Speech.stop();
-      setIsSpeaking(false);
-      return;
-    }
 
     Speech.speak(spokenText, {
       language: locale === 'fr' ? 'fr-FR' : 'en-US',
@@ -100,19 +94,34 @@ export default function ResultScreen() {
       onStopped: () => setIsSpeaking(false),
     });
     setIsSpeaking(true);
-  }
+  }, [locale, spokenText]);
+
+  const handleSpeak = useCallback(() => {
+    if (isSpeaking) {
+      void Speech.stop();
+      setIsSpeaking(false);
+      return;
+    }
+
+    startSpeaking();
+  }, [isSpeaking, startSpeaking]);
 
   useEffect(() => {
     if (!audioGuidanceEnabled || !spokenText) return;
 
     const timeout = setTimeout(() => {
-      handleSpeak();
+      startSpeaking();
     }, 500);
 
     return () => {
       clearTimeout(timeout);
+      void Speech.stop();
     };
-  }, [audioGuidanceEnabled, spokenText]);
+  }, [audioGuidanceEnabled, spokenText, startSpeaking]);
+
+  useEffect(() => () => {
+    void Speech.stop();
+  }, []);
 
   async function save() {
     if (!params.diagnosisId || !params.crop) {

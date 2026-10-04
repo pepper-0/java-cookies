@@ -1,0 +1,127 @@
+## Iteration 1
+
+#UI Changes
+1. After the diagnosis result, Make the existing button return to the home screen
+2. Move the pending/synced identifier to the syncstatus box in the home screen
+3. Add an initial first time user screen that guides the user into making a farm account and then another screen for a quick slideshow that explains the app
+3a. Returning users should not see these screens 
+4. Capitalize the first letter of all headers
+4a. "My farm" and "Sync status" and "Check a crop in the field" are not capitalized properly
+5. Add a sample settings button and screen on the homepage (doesn't have to have any functionality)
+
+## Implementation Status
+
+- [x] The saved diagnosis action now returns directly to the home screen. Saving remains a deliberate user action so observations are not stored accidentally.
+- [x] The overall PENDING/SYNCED badge now appears inside the Sync Status tile on the home screen. Individual observation badges remain in My Farm so each record's state is still visible.
+- [x] First-time setup now opens the farm profile form, followed by a three-screen app tour.
+- [x] Onboarding progress is persisted in the local SQLite settings table using `onboarding_started` and `onboarding_complete`. Interrupted setup resumes, while returning users with an existing farm profile skip the new-user flow.
+- [x] Visible screen and section headers use Title Case, including My Farm, Sync Status, and Check a Crop in the Field.
+- [x] A Settings tile and placeholder Settings screen were added. The options are intentionally inactive for this iteration.
+
+## Validation
+
+- [x] TypeScript check: `npm run typecheck`
+- [x] Expo lint check: `npm run lint`
+- [x] Android bundle check: `expo export --platform android`
+- [ ] Manual Android emulator walkthrough: clear the app's storage, launch LimaDRC, create a farm profile, finish the tour, save a diagnosis, and confirm Return Home and the Sync Status badge.
+
+## Iteration 2
+
+# UI Changes
+1. make selecting primary crops a multiselect dropdown menu 
+    Maize, Cassava, Rice, Other 
+    Other opens a textbox input
+2. Make preferred language a dropdown menu of English, French, Lingala, Swahili, Tshiluba, Kikongo; no "other" option
+    For demonstration purposes, changing the language doesn't change anything in the app yet, but it would change the app interface and text to speech 
+3. Build the foundations of current settings functionality 
+    Changing language will change app interface (But not in this current iteration)
+    Same with audio guidance and notifications
+    add the ui but don't change the rest of the app
+    settings should persist after reloading the app
+
+## Iteration 2 Implementation Status
+
+- [x] Primary Crops now uses a multi-select menu with Maize, Cassava, Rice, and Other.
+- [x] Selecting Other displays a required custom crop text field.
+- [x] Existing free-text crop values remain compatible: supported crops are selected and unsupported crops are moved into the Other field when a profile is loaded.
+- [x] Preferred Language now uses a single-select menu with English, French, Lingala, Swahili, Tshiluba, and Kikongo.
+- [x] Settings now includes a separate App Language selector plus Audio Guidance and Notifications toggles.
+- [x] Settings persist in the local SQLite settings table after the user selects Save Settings.
+- [x] Translation, text-to-speech, notification permissions, and notification scheduling remain intentionally inactive in this iteration.
+
+## Iteration 2 Validation
+
+- [x] TypeScript check: `npm run typecheck`
+- [x] Expo lint check: `npm run lint`
+- [x] Legacy crop parsing and serialization smoke check
+- [x] Android bundle check: `expo export --platform android`
+- [ ] Manual Android emulator walkthrough: verify crop selection, the Other input, both language menus, saving settings, and persistence after restarting the app.
+
+## Model Training Contract
+
+- [x] Removed the obsolete disease-intensity field from the classifier result, diagnosis screen navigation, result screen, local observation contract, synchronization payload, backend API, and database schemas.
+- [x] Defined one 15-class output shared by the MobileNetV3 training handoff and mobile app labels.
+- [x] Maize classes: Healthy, Maize Streak Disease, Northern Leaf Blight, Common Rust, and Unknown.
+- [x] Cassava classes: Healthy, Cassava Brown Streak Disease, Cassava Bacterial Blight, Cassava Mosaic Disease, and Unknown.
+- [x] Rice classes: Healthy, Bacterial Leaf Blight, Rice Blast, Rice Yellow Mottle Disease, and Unknown.
+- [x] Added the expected dataset directory structure and ignored datasets, checkpoints, training runs, and exported model binaries in Git.
+- [x] Validated exact class-index agreement between `mobilenetv3-training/classes.json` and `mobile/src/ml/labels.json`.
+- [x] Mobile TypeScript and Expo lint checks pass.
+- [x] Backend API tests confirm obsolete observation columns are removed while existing records are preserved.
+- [x] Android bundle check passes after the diagnosis-contract update.
+- [ ] Run the updated diagnosis flow manually in the Android emulator.
+
+## MobileNetV3Small Training Scaffold
+
+- [x] Added a reproducible TensorFlow 2.16.2 environment targeting Python 3.12.
+- [x] Configured MobileNetV3Small with ImageNet initialization, 224×224 RGB input, embedded preprocessing, and a 15-class softmax output.
+- [x] Added deterministic dataset preparation with required-class checks, unreadable-image validation, exact duplicate detection, and optional plant/session grouping to prevent split leakage.
+- [x] Added class-weighted head training followed by low-learning-rate fine-tuning with batch-normalization layers kept frozen.
+- [x] Added held-out evaluation with accuracy, top-three accuracy, per-class precision/recall/F1, and a confusion matrix.
+- [x] Added float32 and float16 TFLite export with shape, dtype, probability, checksum, and test-inference verification.
+- [x] Added mobile-label consistency and grouped-manifest unit tests; contract validation, unit tests, compilation, and CLI parsing pass without datasets.
+- [ ] Install the pinned TensorFlow dependency in Python 3.12 and run the model-construction test. It is currently skipped because the compatible environment is not installed on this machine.
+- [ ] Add image datasets and capture-group metadata, then prepare manifests, train, evaluate, calibrate confidence behavior, and export the first model.
+
+## Diagnosis Result Image Follow-up
+
+- [x] Converted the blank result area into an explicit 4:3 preview of the crop photo used for diagnosis.
+- [x] Added visible loading, loaded-caption, and unavailable-photo states.
+- [x] Added a Choose Another Photo recovery action. Saving stores diagnosis metadata even if the transient preview becomes unavailable.
+- [x] Crop photos remain transient during diagnosis and are not copied into app storage or included in observation records or sync payloads.
+- [x] Added version-2 mobile and backend migrations that remove legacy persisted photo references while preserving observation metadata; the mobile migration also removes the legacy observation-image directory.
+- [x] Mobile TypeScript and Expo lint checks pass.
+- [x] Android bundle check passes.
+- [ ] Confirm the local photo renders on the diagnosis result screen in the Android emulator.
+
+## Local Diagnosis Guidance
+
+- [x] Added a versioned English JSON template using the disease diagnosis record schema.
+- [x] Added complete database-backed entries for all 15 `diagnosis_id` values plus a same-schema fallback for future unknown IDs.
+- [x] Replaced the hardcoded result advice with an offline lookup keyed by `diagnosis_id`.
+- [x] Updated the result screen to render symptoms, structured treatments, cost metadata, local-verification warnings, and the field summary.
+- [x] Added contract validation requiring exact guidance coverage for every model class and complete database-schema fields for every entry.
+- [x] Mobile TypeScript, Expo lint, and guidance-contract validation pass.
+- [x] Android bundle check passes with the local JSON included.
+- [ ] Review and localize the sample agricultural guidance with appropriate DRC agricultural experts before production use.
+- [ ] Confirm every guidance section renders correctly in the Android emulator.
+
+## English and French Localization
+
+- [x] Added a persistent offline localization provider with English fallback and French support.
+- [x] Connected navigation, onboarding, farm profile, diagnosis, result, synchronization, settings, shared selectors, accessibility labels, and status badges to translated strings.
+- [x] Limited the app-interface selector to the currently supported English and French locales while retaining all preferred-language choices in the farm profile.
+- [x] Added a complete French diagnosis catalog with the same 15 class IDs and disease diagnosis schema as the English catalog.
+- [x] Added cross-locale contract validation for diagnosis coverage, symptom counts, treatment counts, types, and treatment categories.
+- [ ] Have a native French speaker and DRC agricultural expert review terminology, treatment guidance, and prices.
+- [ ] Confirm English/French switching and all translated layouts in the Android emulator.
+
+## Static Market Price Demonstration
+
+- [x] Enabled the Market Prices home tile and added a dedicated Expo Router screen.
+- [x] Added an asynchronous market-price provider contract backed by nine static CDF-per-kilogram demonstration values for maize, cassava, and rice.
+- [x] Added crop filters, pull timestamps, manual refresh, loading and error states, and English/French interface text.
+- [x] Clearly marked all displayed values as invented demonstration data that must not be used for real buying or selling decisions.
+- [x] TypeScript, Expo lint, diagnosis-guidance validation, and Android bundle checks pass with the market-price feature enabled.
+- [ ] Replace the static provider with a reviewed, timestamped live DRC market-data source before production use.
+- [ ] Validate market terminology, units, locations, and mobile layout with local agricultural experts and Android emulator users.

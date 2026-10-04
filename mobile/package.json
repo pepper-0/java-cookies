@@ -31,6 +31,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
+    "validate:guidance": "node scripts/validate-guidance.cjs",
     "doctor": "expo-doctor"
   },
   "private": true,

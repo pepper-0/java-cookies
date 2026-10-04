@@ -4,7 +4,6 @@ export type DiagnosisResult = {
   diagnosis_id: string;
   crop: string;
   confidence: number;
-  severity?: string;
 };
 
 export interface ImageClassifier {

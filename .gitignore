@@ -1,0 +1,35 @@
+# Operating-system files
+.DS_Store
+
+# Local environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Python backend
+backend/.venv/
+backend/database/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# MobileNetV3 training artifacts
+mobilenetv3-training/.venv/
+mobilenetv3-training/datasets/
+mobilenetv3-training/manifests/
+mobilenetv3-training/checkpoints/
+mobilenetv3-training/exports/
+mobilenetv3-training/runs/
+mobilenetv3-training/**/*.tflite
+mobilenetv3-training/**/*.onnx
+mobilenetv3-training/**/*.pt
+mobilenetv3-training/**/*.pth
+mobilenetv3-training/**/*.keras
+
+# Local logs
+*.log

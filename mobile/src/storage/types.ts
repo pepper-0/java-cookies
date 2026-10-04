@@ -25,11 +25,9 @@ export type Observation = {
   farmer_id: string | null;
   farm_id: string | null;
   timestamp: string;
-  image_uri: string;
   crop: string;
   diagnosis_id: string;
   confidence: number;
-  severity: string | null;
   sync_status: SyncStatus;
 };
 
@@ -48,9 +46,7 @@ export type ProfileBundle = {
 };
 
 export type ObservationInput = {
-  imageUri: string;
   crop: string;
   diagnosisId: string;
   confidence: number;
-  severity?: string;
 };

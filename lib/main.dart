@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'dart:convert';
 import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 void main() {
@@ -57,12 +59,149 @@ class Observation {
       : time = time ?? DateTime.now();
 }
 
+const int confidenceThreshold = 65;
+
 class Diagnosis {
   final String crop, disease;
   final int confidence;
   final List<String> steps;
   const Diagnosis(this.crop, this.disease, this.confidence, this.steps);
   bool get isHealthy => disease == 'Healthy';
+  bool get isUncertain => confidence < confidenceThreshold;
+}
+
+class Report {
+  final String summary;
+  final List<String> doNow, thisWeek, prevention;
+  final String getHelp;
+  final bool aiGenerated;
+
+  const Report({
+    required this.summary,
+    required this.doNow,
+    required this.thisWeek,
+    required this.prevention,
+    required this.getHelp,
+    this.aiGenerated = false,
+  });
+}
+
+const knowledgeBase = <String, Report>{
+  'Cassava Mosaic Disease': Report(
+    summary:
+        'Cassava Mosaic Disease is a virus spread by whiteflies and by planting infected cuttings. It lowers yield but can be managed.',
+    doNow: [
+      'Pull out and bury or burn clearly infected plants.',
+      'Do not take cuttings from infected plants.',
+    ],
+    thisWeek: [
+      'Walk the field and check neighboring plants for yellow-green patterned leaves.',
+      'Mark suspicious plants so you can watch them.',
+    ],
+    prevention: [
+      'Plant clean cuttings from healthy plants.',
+      'Ask your extension office about resistant varieties.',
+      'Remove weeds that host whiteflies.',
+    ],
+    getHelp:
+        'If more than a few plants are affected, tell your extension officer.',
+  ),
+  'Healthy': Report(
+    summary: 'This plant looks healthy.',
+    doNow: ['No action needed.'],
+    thisWeek: ['Check a few plants again.'],
+    prevention: ['Use clean cuttings and keep weeds down.'],
+    getHelp: 'If leaves change color or curl, take another photo.',
+  ),
+  'Maize Leaf Blight': Report(
+    summary:
+        'Maize Leaf Blight damages leaves and can reduce yield if it spreads through the field.',
+    doNow: [
+      'Remove badly affected leaves.',
+      'Avoid spreading infected leaves with tools or hands.',
+    ],
+    thisWeek: [
+      'Check neighboring maize plants for leaf lesions.',
+      'Note where symptoms are worst so you can watch them.',
+    ],
+    prevention: [
+      'Rotate crops next season.',
+      'Avoid working in the field when leaves are wet.',
+      'Keep fields clean and remove infected residue.',
+    ],
+    getHelp:
+        'If symptoms spread quickly, ask your extension officer for support.',
+  ),
+  'Rice Blast': Report(
+    summary:
+        'Rice Blast can weaken the crop by damaging leaves and heads, especially in wet conditions.',
+    doNow: [
+      'Avoid too much nitrogen fertilizer.',
+      'Remove badly affected plants or panicles where possible.',
+    ],
+    thisWeek: [
+      'Walk the field and check for blast lesions on leaves.',
+      'Watch for plants that look stressed after rain.',
+    ],
+    prevention: [
+      'Keep water levels steady.',
+      'Use resistant varieties when available.',
+      'Avoid dense planting that keeps leaves wet.',
+    ],
+    getHelp: 'Report sudden spread to your extension officer.',
+  ),
+};
+
+Report offlineReport(Diagnosis d) =>
+    knowledgeBase[d.disease] ??
+    Report(
+      summary: d.disease,
+      doNow: d.steps,
+      thisWeek: const [],
+      prevention: const [],
+      getHelp: 'Ask your extension officer if unsure.',
+    );
+
+Future<Report?> generateAiReport(
+  Diagnosis d,
+  String region,
+  String language,
+) async {
+  final base = offlineReport(d);
+  try {
+    final res = await http
+        .post(
+          Uri.parse('https://YOUR-BACKEND/report'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'crop': d.crop,
+            'disease': d.disease,
+            'confidence': d.confidence,
+            'region': region,
+            'language': language,
+            'facts': {
+              'summary': base.summary,
+              'doNow': base.doNow,
+              'thisWeek': base.thisWeek,
+              'prevention': base.prevention,
+              'getHelp': base.getHelp,
+            },
+          }),
+        )
+        .timeout(const Duration(seconds: 15));
+    if (res.statusCode != 200) return null;
+    final j = jsonDecode(res.body);
+    return Report(
+      summary: j['summary'],
+      doNow: List<String>.from(j['doNow']),
+      thisWeek: List<String>.from(j['thisWeek']),
+      prevention: List<String>.from(j['prevention']),
+      getHelp: j['getHelp'],
+      aiGenerated: true,
+    );
+  } catch (_) {
+    return null;
+  }
 }
 
 // Fake for now. Swap the body for a real model later; the UI won't change.
@@ -88,8 +227,9 @@ Future<Diagnosis> classify(Uint8List bytes) async {
       'No action needed.',
       'Keep checking your plants regularly.',
     ]),
+    Diagnosis('Unknown', 'Unclear', 48, []),
   ];
-  return options[bytes.length % options.length]; // varies per photo
+  return options[bytes.length % options.length];
 }
 
 // ─────────────────────────────────────────────
@@ -136,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final result = await Navigator.push<Observation>(
       context,
       MaterialPageRoute(
-        builder: (context) => const ScannerScreen(),
+        builder: (context) => ScannerScreen(isOnline: isOnline),
       ),
     );
 
@@ -247,10 +387,10 @@ class _HomeScreenState extends State<HomeScreen> {
               vertical: 13,
             ),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF0DC),
+              color: bannerBg,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: warmOrange.withOpacity(0.25),
+                color: warmOrange.withValues(alpha: 0.25),
               ),
             ),
             child: Row(
@@ -258,19 +398,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   width: 10,
                   height: 10,
-                  decoration: const BoxDecoration(
-                    color: warmOrange,
+                  decoration: BoxDecoration(
+                    color: bannerDot,
                     shape: BoxShape.circle,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    pendingCount == 0
-                        ? 'Offline — No observations waiting'
-                        : 'Offline — $pendingCount observation${pendingCount == 1 ? '' : 's'} ready to sync',
-                    style: const TextStyle(
-                      color: Color(0xFF7A5328),
+                    bannerText,
+                    style: TextStyle(
+                      color: bannerTextColor,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -587,9 +725,10 @@ class _HomeScreenState extends State<HomeScreen> {
 // ─────────────────────────────────────────────
 
 class ScannerScreen extends StatelessWidget {
-  const ScannerScreen({super.key});
+  final bool isOnline;
 
-  // in ScannerScreen
+  const ScannerScreen({super.key, required this.isOnline});
+
   Future<void> capture(BuildContext context) async {
     final picked = await ImagePicker().pickImage(source: ImageSource.camera);
     if (picked == null) return;
@@ -599,7 +738,11 @@ class ScannerScreen extends StatelessWidget {
     final result = await Navigator.push<Observation>(
       context,
       MaterialPageRoute(
-        builder: (_) => DiagnosisScreen(imageBytes: bytes, diagnosis: diagnosis),
+        builder: (_) => DiagnosisScreen(
+          imageBytes: bytes,
+          diagnosis: diagnosis,
+          isOnline: isOnline,
+        ),
       ),
     );
     if (result != null && context.mounted) Navigator.pop(context, result);
@@ -622,7 +765,7 @@ class ScannerScreen extends StatelessWidget {
                 margin: const EdgeInsets.all(28),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(28),
@@ -707,11 +850,13 @@ class ScannerScreen extends StatelessWidget {
 class DiagnosisScreen extends StatefulWidget {
   final Uint8List imageBytes;
   final Diagnosis diagnosis;
+  final bool isOnline;
 
   const DiagnosisScreen({
     super.key,
     required this.imageBytes,
     required this.diagnosis,
+    required this.isOnline,
   });
 
   @override
@@ -724,6 +869,10 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   Future<void> speakDiagnosis() async {
     await tts.setLanguage('en-US');
     await tts.setSpeechRate(0.45);
+    if (widget.diagnosis.isUncertain) {
+      await tts.speak('I am not sure. Please retake the photo in good light.');
+      return;
+    }
     await tts.speak(
       '${widget.diagnosis.disease} detected. ${widget.diagnosis.steps.join(' ')}',
     );
@@ -742,6 +891,57 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Observation saved offline.'),
+      ),
+    );
+  }
+
+  Widget _buildUncertain() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF0DC),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.help_outline_rounded, color: warmOrange, size: 36),
+          const SizedBox(height: 12),
+          const Text(
+            'Not sure about this one',
+            style: TextStyle(
+              color: darkText,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Retake the photo in good light. Hold the leaf flat and fill the frame.',
+            style: TextStyle(color: darkText, fontSize: 15, height: 1.45),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: ElevatedButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.camera_alt_rounded),
+              label: const Text(
+                'RETAKE PHOTO',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: forestGreen,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(17),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -776,96 +976,120 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
               ),
             ),
             const SizedBox(height: 25),
-            Text(
-              widget.diagnosis.crop.toUpperCase(),
-              style: const TextStyle(
-                color: mutedText,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.4,
+            if (widget.diagnosis.isUncertain)
+              _buildUncertain()
+            else ...[
+              Text(
+                widget.diagnosis.crop.toUpperCase(),
+                style: const TextStyle(
+                  color: mutedText,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.4,
+                ),
               ),
-            ),
-            const SizedBox(height: 7),
-            Text(
-              widget.diagnosis.disease,
-              style: const TextStyle(
-                color: darkText,
-                fontSize: 27,
-                fontWeight: FontWeight.w700,
+              const SizedBox(height: 7),
+              Text(
+                widget.diagnosis.disease,
+                style: const TextStyle(
+                  color: darkText,
+                  fontSize: 27,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 7,
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE4F0E4),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Text(
+                      '${widget.diagnosis.confidence}% confidence',
+                      style: const TextStyle(
+                        color: forestGreen,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE4F0E4),
-                    borderRadius: BorderRadius.circular(30),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: speakDiagnosis,
+                    icon: const Icon(Icons.volume_up_rounded),
+                    color: forestGreen,
+                    tooltip: 'Listen',
                   ),
-                  child: Text(
-                    '${widget.diagnosis.confidence}% confidence',
-                    style: const TextStyle(
+                  const Text(
+                    'Listen',
+                    style: TextStyle(
                       color: forestGreen,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
+              const Text(
+                'What to do',
+                style: TextStyle(
+                  color: darkText,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 13),
+              ...widget.diagnosis.steps
+                  .asMap()
+                  .entries
+                  .map((e) => _recommendation('${e.key + 1}', e.value)),
+              const SizedBox(height: 22),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ReportScreen(
+                        diagnosis: widget.diagnosis,
+                        region: 'Kwilu',
+                        isOnline: widget.isOnline,
+                      ),
+                    ),
+                  ),
+                  icon: const Icon(Icons.description_outlined),
+                  label: const Text('VIEW FULL REPORT'),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 58,
+                child: ElevatedButton(
+                  onPressed: saveObservation,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: forestGreen,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                  ),
+                  child: const Text(
+                    'SAVE OBSERVATION',
+                    style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      fontSize: 13,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
-                const Spacer(),
-                IconButton(
-                  onPressed: speakDiagnosis,
-                  icon: const Icon(Icons.volume_up_rounded),
-                  color: forestGreen,
-                  tooltip: 'Listen',
-                ),
-                const Text(
-                  'Listen',
-                  style: TextStyle(
-                    color: forestGreen,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 28),
-            const Text(
-              'What to do',
-              style: TextStyle(
-                color: darkText,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
               ),
-            ),
-            const SizedBox(height: 13),
-            ...widget.diagnosis.steps.asMap().entries.map(
-              (e) => _recommendation('${e.key + 1}', e.value),
-            ),
-            const SizedBox(height: 22),
-            SizedBox(
-              width: double.infinity,
-              height: 58,
-              child: ElevatedButton(
-                onPressed: saveObservation,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: forestGreen,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                ),
-                child: const Text(
-                  'SAVE OBSERVATION',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            ),
+            ],
           ],
         ),
       ),
@@ -915,6 +1139,180 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   void dispose() {
     tts.stop();
     super.dispose();
+  }
+}
+
+class ReportScreen extends StatefulWidget {
+  final Diagnosis diagnosis;
+  final String region;
+  final bool isOnline;
+
+  const ReportScreen({
+    super.key,
+    required this.diagnosis,
+    required this.region,
+    required this.isOnline,
+  });
+
+  @override
+  State<ReportScreen> createState() => _ReportScreenState();
+}
+
+class _ReportScreenState extends State<ReportScreen> {
+  late Report report = offlineReport(widget.diagnosis);
+  bool loading = false;
+
+  Future<void> enhance() async {
+    setState(() => loading = true);
+    final r = await generateAiReport(widget.diagnosis, widget.region, 'en');
+    if (!mounted) return;
+    setState(() {
+      loading = false;
+      if (r != null) report = r;
+    });
+    if (r == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not reach AI. Showing saved report.')),
+      );
+    }
+  }
+
+  Widget _section(String title, List<String> items) {
+    if (items.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: darkText,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...items.map(
+            (t) => Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 3),
+                    child: Icon(
+                      Icons.check_circle_rounded,
+                      size: 18,
+                      color: leafGreen,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      t,
+                      style: const TextStyle(
+                        color: darkText,
+                        fontSize: 15,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: cream,
+        title: const Text(
+          'Report',
+          style: TextStyle(color: darkText, fontWeight: FontWeight.w700),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.diagnosis.disease,
+              style: const TextStyle(
+                color: darkText,
+                fontSize: 26,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${widget.diagnosis.crop} · ${widget.region}',
+              style: const TextStyle(color: mutedText),
+            ),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: report.aiGenerated
+                    ? const Color(0xFFE4F0E4)
+                    : const Color(0xFFFFF0DC),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                report.aiGenerated ? 'AI-enhanced report' : 'Saved offline report',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              report.summary,
+              style: const TextStyle(
+                color: darkText,
+                fontSize: 15,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            _section('Do now', report.doNow),
+            _section('This week', report.thisWeek),
+            _section('Prevention', report.prevention),
+            _section('When to get help', [report.getHelp]),
+            if (widget.isOnline && !report.aiGenerated)
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  onPressed: loading ? null : enhance,
+                  icon: loading
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.auto_awesome_rounded),
+                  label: Text(loading ? 'WRITING...' : 'ENHANCE WITH AI'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: forestGreen,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(17),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

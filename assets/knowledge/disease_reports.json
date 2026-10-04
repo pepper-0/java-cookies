@@ -1,0 +1,228 @@
+{
+  "meta": {
+    "version": 1,
+    "languages": ["en", "fr"],
+    "note": "Known labels in this repo are based on the current model output and should be confirmed with the ML team before production deployment.",
+    "sources": [
+      "IITA cassava disease management guidance for Cassava Mosaic Disease",
+      "CGIAR and national extension guidance for maize and rice foliar disease management",
+      "Field extension notes used for farmer-facing risk communication"
+    ]
+  },
+  "labels": {
+    "cassava_mosaic": {
+      "crop": "Cassava",
+      "name": {
+        "en": "Cassava Mosaic Disease",
+        "fr": "Mosaïque du manioc"
+      },
+      "summary": {
+        "en": "Cassava Mosaic Disease is a virus spread mainly by whiteflies and by planting infected cuttings. It reduces vigor and yield, but it can be managed with clean planting material and prompt removal of infected plants.",
+        "fr": "La mosaïque du manioc est une maladie virale transmise surtout par les aleurodes et par la plantation de boutures infectées. Elle réduit la vigueur et le rendement, mais peut être maîtrisée avec du matériel de plantation sain et l'élimination rapide des plants infectés."
+      },
+      "doNow": {
+        "en": [
+          "Remove and destroy clearly infected plants.",
+          "Do not keep cuttings from infected plants for planting."
+        ],
+        "fr": [
+          "Retirez et éliminez les plants clairement infectés.",
+          "Ne gardez pas de boutures de plants infectés pour la plantation."
+        ]
+      },
+      "thisWeek": {
+        "en": [
+          "Walk neighboring rows and check for yellow-green mosaic patterns on leaves.",
+          "Mark suspicious plants and monitor them closely."
+        ],
+        "fr": [
+          "Parcourez les rangs voisins et vérifiez les motifs jaunes et verts en mosaïque sur les feuilles.",
+          "Marquez les plants suspects et surveillez-les de près."
+        ]
+      },
+      "prevention": {
+        "en": [
+          "Plant clean, healthy cuttings from trusted sources.",
+          "Ask your extension officer about resistant cassava varieties.",
+          "Remove weeds that harbor whiteflies."
+        ],
+        "fr": [
+          "Plantez des boutures propres et saines provenant de sources fiables.",
+          "Demandez à votre agent de vulgarisation des variétés de manioc résistantes.",
+          "Éliminez les mauvaises herbes qui abritent les aleurodes."
+        ]
+      },
+      "whenToGetHelp": {
+        "en": [
+          "If several plants are showing symptoms in the same area, contact your extension officer."
+        ],
+        "fr": [
+          "Si plusieurs plants présentent des symptômes dans la même zone, contactez votre agent de vulgarisation."
+        ]
+      },
+      "sources": [
+        "IITA cassava disease management guidance",
+        "CGIAR/extension recommendations for virus management in cassava"
+      ]
+    },
+    "healthy": {
+      "crop": "Cassava",
+      "name": {
+        "en": "Healthy",
+        "fr": "Sain"
+      },
+      "summary": {
+        "en": "This plant appears healthy. Continue routine monitoring and good crop hygiene.",
+        "fr": "Ce plant semble sain. Continuez la surveillance de routine et la bonne hygiène culturale."
+      },
+      "doNow": {
+        "en": [
+          "No action is needed right now."
+        ],
+        "fr": [
+          "Aucune action n'est nécessaire maintenant."
+        ]
+      },
+      "thisWeek": {
+        "en": [
+          "Check a few nearby plants again to confirm the field is stable."
+        ],
+        "fr": [
+          "Vérifiez à nouveau quelques plants voisins pour confirmer que le champ est stable."
+        ]
+      },
+      "prevention": {
+        "en": [
+          "Use clean cuttings and keep field weeds down.",
+          "Monitor regularly for changes in leaf color or curling."
+        ],
+        "fr": [
+          "Utilisez des boutures saines et gardez les mauvaises herbes hors du champ.",
+          "Surveillez régulièrement les changements de couleur ou de courbure des feuilles."
+        ]
+      },
+      "whenToGetHelp": {
+        "en": [
+          "If leaves begin to curl, yellow, or wilt, take another photo and ask for advice."
+        ],
+        "fr": [
+          "Si les feuilles commencent à se courber, jaunir ou flétrir, prenez une autre photo et demandez conseil."
+        ]
+      },
+      "sources": [
+        "Field monitoring guidance for healthy crop observation",
+        "Extension recommendations for routine crop scouting"
+      ]
+    },
+    "maize_leaf_blight": {
+      "crop": "Maize",
+      "name": {
+        "en": "Maize Leaf Blight",
+        "fr": "Rouille des feuilles du maïs"
+      },
+      "summary": {
+        "en": "Maize Leaf Blight damages foliage and can reduce yield when it spreads through the field. Early observation and removal of badly affected leaves helps reduce losses.",
+        "fr": "La rouille des feuilles du maïs endommage les feuilles et peut réduire le rendement quand elle se propage dans le champ. Une observation précoce et l'enlèvement des feuilles gravement touchées aident à réduire les pertes."
+      },
+      "doNow": {
+        "en": [
+          "Remove badly affected leaves from the field.",
+          "Avoid moving infected leaves between rows or tools."
+        ],
+        "fr": [
+          "Retirez les feuilles gravement touchées du champ.",
+          "Évitez de déplacer les feuilles infectées entre les rangs ou sur les outils."
+        ]
+      },
+      "thisWeek": {
+        "en": [
+          "Check nearby maize plants for lesions or leaf damage.",
+          "Note where the symptoms are worst so you can track spread."
+        ],
+        "fr": [
+          "Vérifiez les plants de maïs voisins pour détecter des lésions ou des dégâts foliaires.",
+          "Notez les endroits où les symptômes sont les plus forts pour suivre la propagation."
+        ]
+      },
+      "prevention": {
+        "en": [
+          "Rotate crops next season where possible.",
+          "Avoid working in the field when leaves are wet.",
+          "Keep plots clean and remove infected residue."
+        ],
+        "fr": [
+          "Faites une rotation des cultures la saison prochaine si possible.",
+          "Évitez de travailler dans le champ quand les feuilles sont mouillées.",
+          "Gardez les parcelles propres et retirez les résidus infectés."
+        ]
+      },
+      "whenToGetHelp": {
+        "en": [
+          "If the disease is spreading quickly across rows, ask your extension officer for support."
+        ],
+        "fr": [
+          "Si la maladie se propage rapidement entre les rangs, demandez l'aide de votre agent de vulgarisation."
+        ]
+      },
+      "sources": [
+        "CGIAR and extension guidance for maize foliar disease management",
+        "Field recommendations on crop sanitation and disease scouting"
+      ]
+    },
+    "rice_blast": {
+      "crop": "Rice",
+      "name": {
+        "en": "Rice Blast",
+        "fr": "Pyriculariose du riz"
+      },
+      "summary": {
+        "en": "Rice Blast can damage leaves and panicles and often spreads under wet conditions. It needs timely monitoring and careful crop management.",
+        "fr": "La pyriculariose du riz peut endommager les feuilles et les panicules et se propage souvent dans des conditions humides. Elle nécessite une surveillance rapide et une gestion attentive de la culture."
+      },
+      "doNow": {
+        "en": [
+          "Avoid excessive nitrogen fertilizer during active disease pressure.",
+          "Remove or isolate badly affected plants where possible."
+        ],
+        "fr": [
+          "Évitez un excès d'engrais azoté pendant la pression active de la maladie.",
+          "Retirez ou isolez les plants gravement touchés si possible."
+        ]
+      },
+      "thisWeek": {
+        "en": [
+          "Walk the field and check for diamond-shaped lesions on leaves.",
+          "Watch for stress after rainfall or periods of humidity."
+        ],
+        "fr": [
+          "Parcourez le champ et vérifiez les lésions en forme de losange sur les feuilles.",
+          "Surveillez les signes de stress après les pluies ou les périodes d'humidité."
+        ]
+      },
+      "prevention": {
+        "en": [
+          "Keep water levels stable.",
+          "Use resistant varieties when available.",
+          "Avoid dense planting that keeps leaves wet for long periods."
+        ],
+        "fr": [
+          "Maintenez des niveaux d'eau stables.",
+          "Utilisez des variétés résistantes quand elles sont disponibles.",
+          "Évitez les plantations denses qui maintiennent les feuilles mouillées longtemps."
+        ]
+      },
+      "whenToGetHelp": {
+        "en": [
+          "If disease spread accelerates quickly after rain, contact your extension officer."
+        ],
+        "fr": [
+          "Si la propagation s'accélère rapidement après la pluie, contactez votre agent de vulgarisation."
+        ]
+      },
+      "sources": [
+        "CGIAR and rice disease guidance for smallholder fields",
+        "Extension recommendations on rice blast monitoring and field sanitation"
+      ]
+    }
+  }
+}

@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Screen } from '@/components/ui';
-import { getLocalGuidance } from '@/ml/guidance';
+import { getDiseaseDiagnosis } from '@/ml/guidance';
 import { saveObservation } from '@/storage/database';
 import { colors, radius, spacing } from '@/theme';
 
@@ -22,7 +22,10 @@ export default function ResultScreen() {
     params.imageUri ? 'loading' : 'error',
   );
   const confidence = useMemo(() => Number(params.confidence) || 0, [params.confidence]);
-  const guidance = useMemo(() => getLocalGuidance(params.diagnosisId), [params.diagnosisId]);
+  const diagnosis = useMemo(
+    () => getDiseaseDiagnosis(params.diagnosisId),
+    [params.diagnosisId],
+  );
   const displayedImageStatus = params.imageUri ? imageStatus : 'error';
 
   async function save() {
@@ -49,8 +52,8 @@ export default function ResultScreen() {
   return (
     <Screen
       eyebrow="Mock Diagnosis"
-      title={guidance.title}
-      subtitle="Result-specific field guidance is stored on this device and remains available offline."
+      title={diagnosis.name}
+      subtitle="Diagnosis details and field guidance are stored on this device and remain available offline."
     >
       <View style={styles.imageFrame}>
         {params.imageUri ? (
@@ -104,30 +107,88 @@ export default function ResultScreen() {
         </View>
         <View style={styles.divider} />
         <Text style={styles.label}>Diagnosis ID</Text>
-        <Text style={styles.code}>{params.diagnosisId || 'cassava_mosaic_disease'}</Text>
+        <Text style={styles.code}>{diagnosis.id}</Text>
+        <Text style={styles.label}>Condition Type</Text>
+        <Text style={styles.metricValue}>{formatLabel(diagnosis.type)}</Text>
       </Card>
 
       <Card>
-        <Text style={styles.adviceTitle}>Local Field Guidance</Text>
-        <Text style={styles.adviceBody}>{guidance.summary}</Text>
+        <Text style={styles.adviceTitle}>Diagnosis Details</Text>
+        <Text style={styles.adviceBody}>{diagnosis.diagnosisMessage}</Text>
 
-        <Text style={styles.guidanceHeading}>Recommended Actions</Text>
+        <Text style={styles.guidanceHeading}>Symptoms to Check</Text>
         <View style={styles.actionList}>
-          {guidance.actions.map((action) => (
-            <View key={action} style={styles.actionRow}>
+          {diagnosis.symptoms.map((symptom) => (
+            <View key={symptom} style={styles.actionRow}>
               <Text style={styles.actionBullet}>•</Text>
-              <Text style={styles.actionText}>{action}</Text>
+              <Text style={styles.actionText}>{symptom}</Text>
             </View>
           ))}
         </View>
 
-        <Text style={styles.guidanceHeading}>What to Monitor</Text>
-        <Text style={styles.adviceBody}>{guidance.monitoring}</Text>
+        {diagnosis.symptoms.length === 0 ? (
+          <Text style={styles.adviceBody}>No specific symptoms are available for this result.</Text>
+        ) : null}
 
-        <Text style={styles.guidanceHeading}>When to Seek Help</Text>
-        <Text style={styles.adviceBody}>{guidance.seek_help}</Text>
+        {diagnosis.additionalPhotoRecommended ? (
+          <Text style={styles.photoRecommendation}>
+            Additional photo recommended: {formatLabel(diagnosis.additionalPhotoRecommended)}
+          </Text>
+        ) : null}
 
-        <Text style={styles.disclaimer}>{guidance.disclaimer}</Text>
+        {diagnosis.curativeTreatment !== undefined ? (
+          <Text style={styles.treatmentOutlook}>
+            {diagnosis.curativeTreatment === false
+              ? 'No curative treatment is listed for this condition.'
+              : diagnosis.curativeTreatment === true
+                ? 'Curative treatment options are listed for this condition.'
+                : 'Curative treatment options are limited.'}
+          </Text>
+        ) : null}
+
+        <Text style={styles.guidanceHeading}>Recommended Actions</Text>
+        {diagnosis.treatments.length > 0 ? (
+          <View style={styles.treatmentList}>
+            {diagnosis.treatments.map((treatment, index) => (
+              <View key={`${treatment.name}-${index}`} style={styles.treatmentCard}>
+                <Text style={styles.treatmentName}>{treatment.name}</Text>
+                <Text style={styles.treatmentCategory}>{formatLabel(treatment.category)}</Text>
+                <Text style={styles.adviceBody}>{treatment.description}</Text>
+
+                {treatment.costLevel ? (
+                  <Text style={styles.treatmentMeta}>
+                    Cost level: {formatLabel(treatment.costLevel)}
+                  </Text>
+                ) : null}
+
+                {treatment.estimatedCost !== null ? (
+                  <Text style={styles.treatmentMeta}>
+                    Estimated cost:{' '}
+                    {treatment.estimatedCost === 0
+                      ? 'No direct material cost listed.'
+                      : String(treatment.estimatedCost)}
+                  </Text>
+                ) : null}
+
+                {treatment.requiresLocalVerification ? (
+                  <Text style={styles.verification}>Local verification required before use.</Text>
+                ) : null}
+              </View>
+            ))}
+          </View>
+        ) : (
+          <Text style={styles.adviceBody}>
+            No treatment actions are listed for this result. Continue normal crop monitoring.
+          </Text>
+        )}
+
+        <Text style={styles.guidanceHeading}>Field Summary</Text>
+        <Text style={styles.adviceBody}>{diagnosis.voiceMessage}</Text>
+
+        <Text style={styles.disclaimer}>
+          Image recognition provides a likely result, not a confirmed diagnosis. Confirm treatment,
+          availability, and costs with a local agricultural expert.
+        </Text>
       </Card>
 
       {saved ? (
@@ -161,6 +222,10 @@ function Metric({ label, value }: { label: string; value: string }) {
 
 function capitalize(value: string) {
   return value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
+}
+
+function formatLabel(value: string) {
+  return value.split('_').map(capitalize).join(' ');
 }
 
 const styles = StyleSheet.create({
@@ -224,6 +289,27 @@ const styles = StyleSheet.create({
   actionRow: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.sm },
   actionBullet: { color: colors.primary, fontSize: 18, fontWeight: '900', lineHeight: 22 },
   actionText: { color: colors.textMuted, flex: 1, fontSize: 15, lineHeight: 22 },
+  photoRecommendation: { color: colors.primary, fontSize: 13, fontWeight: '700', lineHeight: 19 },
+  treatmentOutlook: { color: colors.warning, fontSize: 13, fontWeight: '700', lineHeight: 19 },
+  treatmentList: { gap: spacing.sm },
+  treatmentCard: {
+    backgroundColor: colors.surfaceMuted,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    gap: spacing.xs,
+    padding: spacing.md,
+  },
+  treatmentName: { color: colors.text, fontSize: 16, fontWeight: '800' },
+  treatmentCategory: {
+    color: colors.primary,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  treatmentMeta: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  verification: { color: colors.warning, fontSize: 12, fontWeight: '800', lineHeight: 18 },
   disclaimer: { color: colors.warning, fontSize: 12, fontWeight: '700', lineHeight: 18 },
   savedTitle: { color: colors.success, fontSize: 19, fontWeight: '800' },
 });

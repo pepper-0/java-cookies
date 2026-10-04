@@ -1,25 +1,38 @@
 import guidanceJson from './guidance.json';
 
-export type LocalGuidance = {
-  title: string;
-  summary: string;
-  actions: string[];
-  monitoring: string;
-  seek_help: string;
-  disclaimer: string;
+export type DiseaseTreatment = {
+  name: string;
+  category: string;
+  description: string;
+  costLevel: string | null;
+  estimatedCost: string | number | null;
+  requiresLocalVerification?: boolean;
+};
+
+export type DiseaseDiagnosis = {
+  id: string;
+  name: string;
+  type: string;
+  symptoms: string[];
+  diagnosisMessage: string;
+  curativeTreatment?: boolean | 'limited';
+  additionalPhotoRecommended?: string;
+  treatments: DiseaseTreatment[];
+  voiceMessage: string;
 };
 
 type GuidanceCatalog = {
   version: number;
   locale: string;
-  template: LocalGuidance;
-  fallback: LocalGuidance;
-  diagnoses: Record<string, LocalGuidance>;
+  template: DiseaseDiagnosis;
+  fallback: DiseaseDiagnosis;
+  diagnoses: Record<string, DiseaseDiagnosis>;
 };
 
-const catalog: GuidanceCatalog = guidanceJson;
+// JSON imports widen string literals, while the catalog validator enforces the narrower contract.
+const catalog = guidanceJson as GuidanceCatalog;
 
-export function getLocalGuidance(diagnosisId: string | null | undefined) {
+export function getDiseaseDiagnosis(diagnosisId: string | null | undefined) {
   if (!diagnosisId) return catalog.fallback;
   return catalog.diagnoses[diagnosisId] ?? catalog.fallback;
 }

@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Interactive LimaDRC demonstration for crop disease guidance in the Democratic Republic of the Congo."
+    />
+    <meta name="theme-color" content="#173e2b" />
+    <title>LimaDRC · Interactive Demo</title>
+    <link rel="icon" href="/icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Fraunces:opsz,wght@9..144,650;9..144,750&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#demo">Skip to demo</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="LimaDRC home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" role="img">
+            <path d="M25.8 5.9C16.9 6 10 9.9 8.2 17.6c4-3.6 8.2-5.7 12.7-6.4-5.1 2.1-9 5.2-11.8 9.4-.5.7-.9 1.5-1.3 2.3" />
+            <path d="M8.3 17.6C9.5 23 14 26.1 18.9 24.2c5.2-2 7.1-8.3 6.9-18.3Z" />
+          </svg>
+        </span>
+        <span>LimaDRC</span>
+      </a>
+
+      <nav aria-label="Primary navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#demo">Try the demo</a>
+      </nav>
+
+      <a class="header-cta" href="#demo">Open demo</a>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <div class="eyebrow"><span></span> Built for the fields of DRC</div>
+          <h1 id="hero-title">A clearer answer,<br /><em>right in the field.</em></h1>
+          <p class="hero-lede">
+            LimaDRC helps farmers identify cassava and maize conditions from a photo, then turns
+            that result into practical, locally focused next steps.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#demo">
+              Try the interactive demo
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 6 6-6 6" /></svg>
+            </a>
+            <a class="text-link" href="#how-it-works">See how it works <span aria-hidden="true">↓</span></a>
+          </div>
+          <div class="hero-note">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            Demo mode uses scripted results — no photo leaves your browser
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Preview of the LimaDRC diagnosis experience">
+          <div class="sun-disc"></div>
+          <div class="leaf-line leaf-line-one"></div>
+          <div class="leaf-line leaf-line-two"></div>
+          <div class="phone-shell">
+            <div class="phone-top"><span></span></div>
+            <div class="phone-screen">
+              <div class="phone-header">
+                <span class="phone-logo">L</span>
+                <div>
+                  <strong>Crop diagnosis</strong>
+                  <small>Photo analysis</small>
+                </div>
+              </div>
+              <img src="/images/cassava-mosaic.jpg" alt="Cassava leaf selected for analysis" />
+              <div class="scan-line"></div>
+              <div class="phone-result">
+                <span class="result-check">✓</span>
+                <div><small>LIKELY RESULT</small><strong>Cassava Mosaic Disease</strong></div>
+                <b>94%</b>
+              </div>
+            </div>
+          </div>
+          <aside class="floating-card confidence-card">
+            <span>Model confidence</span><strong>94%</strong>
+            <div class="confidence-track"><i></i></div>
+          </aside>
+          <aside class="floating-card offline-card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10M9 14h6M11 10h2M4 5l16 16" /></svg>
+            <div><strong>Works offline</strong><span>Built for remote fields</span></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="trust-strip" aria-label="LimaDRC capabilities">
+        <div><strong>2</strong><span>supported crops</span></div>
+        <div><strong>8</strong><span>recognized conditions</span></div>
+        <div><strong>2</strong><span>guidance languages</span></div>
+        <div><strong>100%</strong><span>on-device inference</span></div>
+      </section>
+
+      <section class="how-section" id="how-it-works" aria-labelledby="how-title">
+        <div class="section-heading">
+          <div class="eyebrow"><span></span> Simple by design</div>
+          <h2 id="how-title">From leaf to next step<br />in three moments.</h2>
+        </div>
+        <div class="steps">
+          <article>
+            <span class="step-number">01</span>
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="3" /><path d="m8 5 1.2-2h5.6L16 5M8 13l2.5 2.5L16 10" /></svg>
+            </div>
+            <h3>Photograph the crop</h3>
+            <p>Take a clear picture of an affected leaf or choose one already on the device.</p>
+          </article>
+          <article>
+            <span class="step-number">02</span>
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" /><circle cx="12" cy="12" r="4" /></svg>
+            </div>
+            <h3>Analyze on the device</h3>
+            <p>The mobile model compares visual patterns without requiring an internet connection.</p>
+          </article>
+          <article>
+            <span class="step-number">03</span>
+            <div class="step-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" /></svg>
+            </div>
+            <h3>Act on clear guidance</h3>
+            <p>Review symptoms and practical field actions in plain language, with audio support.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="demo-section" id="demo" aria-labelledby="demo-title">
+        <div class="demo-heading">
+          <div>
+            <div class="eyebrow eyebrow-light"><span></span> Interactive walkthrough</div>
+            <h2 id="demo-title">See LimaDRC in action.</h2>
+          </div>
+          <div class="demo-mode"><i></i> SCRIPTED DEMO</div>
+        </div>
+
+        <div class="demo-layout">
+          <aside class="sample-panel" aria-labelledby="samples-title">
+            <div>
+              <span class="panel-kicker">STEP 1</span>
+              <h3 id="samples-title">Choose a field sample</h3>
+              <p>Select a prepared photo or upload your own to preview the experience.</p>
+            </div>
+
+            <div class="sample-list" role="list">
+              <button class="sample-option selected" type="button" data-diagnosis="cassava_mosaic_disease" data-image="/images/cassava-mosaic.jpg">
+                <img src="/images/cassava-mosaic.jpg" alt="" />
+                <span><strong>Cassava leaf</strong><small>Patterned discoloration</small></span>
+                <i aria-hidden="true">✓</i>
+              </button>
+              <button class="sample-option" type="button" data-diagnosis="cassava_brown_streak_disease" data-image="/images/cassava-brown-streak.jpg">
+                <img src="/images/cassava-brown-streak.jpg" alt="" />
+                <span><strong>Cassava leaf</strong><small>Brown streak symptoms</small></span>
+                <i aria-hidden="true">✓</i>
+              </button>
+              <button class="sample-option" type="button" data-diagnosis="maize_northern_leaf_blight" data-image="/images/maize-northern-leaf-blight.jpeg">
+                <img src="/images/maize-northern-leaf-blight.jpeg" alt="" />
+                <span><strong>Maize leaf</strong><small>Elongated lesions</small></span>
+                <i aria-hidden="true">✓</i>
+              </button>
+              <button class="sample-option" type="button" data-diagnosis="cassava_healthy" data-image="/images/cassava-healthy.jpg">
+                <img src="/images/cassava-healthy.jpg" alt="" />
+                <span><strong>Healthy cassava</strong><small>Healthy reference</small></span>
+                <i aria-hidden="true">✓</i>
+              </button>
+              <button class="sample-option" type="button" data-diagnosis="maize_healthy" data-image="/images/maize-healthy.jpg">
+                <img src="/images/maize-healthy.jpg" alt="" />
+                <span><strong>Healthy maize</strong><small>Healthy reference</small></span>
+                <i aria-hidden="true">✓</i>
+              </button>
+            </div>
+
+            <label class="upload-button" for="photo-upload">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 15v5h14v-5" /></svg>
+              Upload your own photo
+            </label>
+            <input id="photo-upload" type="file" accept="image/*" />
+            <small class="privacy-copy">Your photo stays on this device. Custom uploads use a scripted demo result.</small>
+          </aside>
+
+          <div class="diagnosis-stage">
+            <div class="photo-stage">
+              <img id="selected-photo" src="/images/cassava-mosaic.jpg" alt="Selected crop leaf" />
+              <div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+              <div class="corner corner-bl"></div><div class="corner corner-br"></div>
+              <div class="analysis-sweep" aria-hidden="true"></div>
+              <div class="photo-label"><span></span><span id="photo-label-text">Ready to analyze</span></div>
+            </div>
+
+            <button class="analyze-button" id="analyze-button" type="button">
+              <span class="analyze-default">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V4h3M17 4h3v3M20 17v3h-3M7 20H4v-3M8 12h8" /></svg>
+                Analyze this photo
+              </span>
+              <span class="analyze-loading"><i></i> Analyzing visual patterns…</span>
+            </button>
+
+            <article class="result-card" id="result-card" aria-live="polite" aria-hidden="true">
+              <div class="result-topline">
+                <span class="result-status"><i>✓</i> Analysis complete</span>
+                <span id="confidence-value">94% confidence</span>
+              </div>
+              <div class="result-title-row">
+                <div>
+                  <span id="crop-name">CASSAVA</span>
+                  <h3 id="diagnosis-name">Cassava Mosaic Disease</h3>
+                </div>
+                <span class="condition-pill" id="condition-type">Viral</span>
+              </div>
+              <p id="diagnosis-message">The cassava plant shows signs consistent with Cassava Mosaic Disease.</p>
+
+              <div class="result-columns">
+                <div>
+                  <h4>What the app noticed</h4>
+                  <ul id="symptom-list"></ul>
+                </div>
+                <div>
+                  <h4>Recommended next steps</h4>
+                  <ol id="action-list"></ol>
+                </div>
+              </div>
+
+              <div class="result-footer">
+                <button type="button" id="listen-button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10v4h4l5 4V6L9 10H5zM17 9c1.5 1.5 1.5 4.5 0 6M19 6c3.5 3.5 3.5 8.5 0 12" /></svg>
+                  <span>Listen to guidance</span>
+                </button>
+                <small>This result is for demonstration only. Confirm field decisions with a local agricultural specialist.</small>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand footer-brand" href="#top"><span class="brand-mark">L</span><span>LimaDRC</span></a>
+      <p>Accessible crop guidance, designed for farmers in the Democratic Republic of the Congo.</p>
+      <span>Hackathon demonstration · 2026</span>
+    </footer>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

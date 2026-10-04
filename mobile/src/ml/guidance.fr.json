@@ -1,0 +1,573 @@
+{
+  "version": 2,
+  "locale": "fr",
+  "template": {
+    "id": "sample_diagnosis_id",
+    "name": "Nom du diagnostic exemple",
+    "type": "unknown",
+    "symptoms": [
+      "Décrivez un symptôme ou un signe visible au champ."
+    ],
+    "diagnosisMessage": "Donnez une brève explication en langage simple de la signification du résultat.",
+    "treatments": [
+      {
+        "name": "Exemple de mesure au champ",
+        "category": "field_management",
+        "description": "Décrivez une mesure à faible risque que l’agriculteur peut prendre maintenant.",
+        "costLevel": null,
+        "estimatedCost": null,
+        "requiresLocalVerification": true
+      }
+    ],
+    "voiceMessage": "Donnez une brève explication orale du résultat probable et de la prochaine mesure la plus sûre."
+  },
+  "fallback": {
+    "id": "unknown",
+    "name": "Conseils indisponibles",
+    "type": "unknown",
+    "symptoms": [],
+    "diagnosisMessage": "Cette affection ne dispose pas encore de conseils locaux dans l’application.",
+    "treatments": [
+      {
+        "name": "Marquer la zone atteinte",
+        "category": "field_management",
+        "description": "Marquez la plante ou la zone atteinte afin de pouvoir la vérifier de nouveau.",
+        "costLevel": null,
+        "estimatedCost": null
+      },
+      {
+        "name": "Éviter la propagation accidentelle",
+        "category": "prevention",
+        "description": "Évitez de déplacer des boutures, semences, feuilles ou outils provenant de la zone atteinte.",
+        "costLevel": null,
+        "estimatedCost": null
+      },
+      {
+        "name": "Demander une inspection locale",
+        "category": "expert_support",
+        "description": "Demandez à un agent de vulgarisation local d’inspecter la culture avant tout traitement ou arrachage.",
+        "costLevel": null,
+        "estimatedCost": null,
+        "requiresLocalVerification": true
+      }
+    ],
+    "voiceMessage": "Aucun conseil n’est disponible pour ce résultat. Marquez la zone atteinte et demandez à un agent de vulgarisation local d’inspecter la culture avant tout traitement ou arrachage."
+  },
+  "diagnoses": {
+    "maize_healthy": {
+      "id": "maize_healthy",
+      "name": "Maïs sain",
+      "type": "healthy",
+      "symptoms": [
+        "Feuilles généralement vertes et uniformes",
+        "Absence de stries, lésions, pustules ou flétrissement importants",
+        "Croissance normale de la plante"
+      ],
+      "diagnosisMessage": "Le plant de maïs paraît sain selon l’analyse actuelle de l’image. Aucun signe des maladies actuellement reconnues par ce modèle n’a été détecté.",
+      "treatments": [],
+      "voiceMessage": "Votre maïs paraît sain selon l’analyse actuelle de l’image. Continuez à surveiller toute apparition inhabituelle de taches, stries, décoloration ou dégâts d’insectes."
+    },
+    "maize_streak_disease": {
+      "id": "maize_streak_disease",
+      "name": "Maladie des stries du maïs",
+      "type": "viral",
+      "symptoms": [
+        "Stries étroites jaunes ou blanches le long des feuilles",
+        "Stries parallèles aux nervures des feuilles",
+        "Croissance réduite des feuilles",
+        "Rabougrissement de la plante",
+        "Développement réduit des épis lors d’infections graves"
+      ],
+      "diagnosisMessage": "Le plant de maïs présente des signes compatibles avec la maladie des stries du maïs.",
+      "curativeTreatment": false,
+      "treatments": [
+        {
+          "name": "Retirer les plants gravement atteints",
+          "category": "field_management",
+          "description": "Retirez les plants gravement atteints lorsque cela est possible afin de réduire les sources potentielles d’infection.",
+          "costLevel": "low",
+          "estimatedCost": "Demande beaucoup de main-d’œuvre, mais reste peu coûteux si le travail est effectué manuellement."
+        },
+        {
+          "name": "Utiliser des variétés de maïs résistantes",
+          "category": "prevention",
+          "description": "Pour les prochaines plantations, utilisez des variétés de maïs adaptées localement et résistantes ou tolérantes à la maladie des stries du maïs.",
+          "costLevel": "variable",
+          "estimatedCost": "7 700 à 10 000 CDF par kg de semences, selon la variété et la disponibilité locale."
+        }
+      ],
+      "voiceMessage": "Votre maïs pourrait être atteint de la maladie des stries du maïs. Cette maladie est causée par un virus; les fongicides ne la guériront donc pas. Je peux expliquer des options de gestion peu coûteuses."
+    },
+    "maize_northern_leaf_blight": {
+      "id": "maize_northern_leaf_blight",
+      "name": "Helminthosporiose du nord du maïs",
+      "type": "fungal",
+      "symptoms": [
+        "Longues lésions fusiformes en forme de cigare",
+        "Lésions gris-vert devenant ensuite beiges ou brunes",
+        "Les lésions peuvent se rejoindre",
+        "De grandes parties des feuilles peuvent mourir lors d’une infection grave"
+      ],
+      "diagnosisMessage": "Le plant de maïs présente des signes compatibles avec l’helminthosporiose du nord du maïs.",
+      "curativeTreatment": "limited",
+      "treatments": [
+        {
+          "name": "Gérer les résidus de culture infectés",
+          "category": "field_management",
+          "description": "Après la récolte, gérez les résidus de maïs infectés afin de réduire la persistance de la maladie. Ils peuvent être enfouis, retirés ou brûlés lorsque la réglementation locale l’autorise.",
+          "costLevel": "low",
+          "estimatedCost": null
+        },
+        {
+          "name": "Pratiquer la rotation des cultures",
+          "category": "prevention",
+          "description": "Lorsque cela est possible, alternez le maïs avec des cultures non hôtes adaptées, comme certaines légumineuses ou plantes à racines.",
+          "costLevel": "variable",
+          "estimatedCost": "Les coûts dépendent des cultures choisies et des prix locaux. Par exemple, les semences de légumineuses peuvent coûter de 3 000 à 8 000 CDF par kg, et celles de plantes à racines de 1 100 à 5 000 CDF par kg."
+        },
+        {
+          "name": "Planter des variétés résistantes",
+          "category": "prevention",
+          "description": "Utilisez des variétés de maïs adaptées localement et résistantes à l’helminthosporiose du nord.",
+          "costLevel": "variable",
+          "estimatedCost": "4 600 à 9 200 CDF par kg de semences, selon la variété et la disponibilité locale."
+        },
+        {
+          "name": "Utiliser un fongicide autorisé localement",
+          "category": "chemical",
+          "description": "Un fongicide peut être envisagé lorsque la pression de la maladie et les pertes prévues justifient le traitement. Il n’est pas recommandé sans avis local en raison de son coût élevé et de la réglementation stricte.",
+          "costLevel": "expensive",
+          "estimatedCost": null,
+          "requiresLocalVerification": true
+        }
+      ],
+      "voiceMessage": "Votre maïs pourrait être atteint de l’helminthosporiose du nord. Je peux présenter des options de gestion adaptées à la superficie du champ et aux ressources disponibles."
+    },
+    "maize_common_rust": {
+      "id": "maize_common_rust",
+      "name": "Rouille commune du maïs",
+      "type": "fungal",
+      "symptoms": [
+        "Petites pustules surélevées brun rougeâtre",
+        "Pustules présentes sur les feuilles de maïs",
+        "Pustules pouvant apparaître sur les deux faces de la feuille",
+        "Jaunissement possible des feuilles lorsque l’infection est grave"
+      ],
+      "diagnosisMessage": "Le plant de maïs présente des signes compatibles avec la rouille commune.",
+      "curativeTreatment": "limited",
+      "treatments": [
+        {
+          "name": "Surveiller l’évolution de la maladie",
+          "category": "field_management",
+          "description": "Surveillez les plants de maïs voisins afin de déterminer si la maladie se propage de manière importante.",
+          "costLevel": "free",
+          "estimatedCost": 0
+        },
+        {
+          "name": "Planter des variétés résistantes",
+          "category": "prevention",
+          "description": "Lors des prochaines plantations, utilisez des variétés de maïs adaptées localement et résistantes à la rouille.",
+          "costLevel": "variable",
+          "estimatedCost": "4 500 à 9 200 CDF par kg de semences, selon la variété et la disponibilité locale."
+        },
+        {
+          "name": "Utiliser un fongicide autorisé localement",
+          "category": "chemical",
+          "description": "Un fongicide peut être envisagé en cas de maladie grave lorsque son utilisation est économiquement justifiée. Utilisez uniquement un produit homologué localement pour le maïs et respectez son étiquette.",
+          "costLevel": "expensive",
+          "estimatedCost": "Les coûts dépendent du fongicide, de la méthode d’application et des prix locaux. Un fongicide homologué peut, par exemple, coûter de 15 000 à 30 000 CDF par litre, sans compter la main-d’œuvre ou le matériel.",
+          "requiresLocalVerification": true
+        }
+      ],
+      "voiceMessage": "Votre maïs pourrait être atteint de rouille commune. Recherchez de petites taches surélevées brun rougeâtre sur les feuilles. Je peux expliquer les options de gestion."
+    },
+    "maize_unknown": {
+      "id": "maize_unknown",
+      "name": "Affection inconnue du maïs",
+      "type": "unknown",
+      "symptoms": [
+        "Changements inhabituels de couleur ou de forme des feuilles",
+        "Taches, stries, dégâts d’insectes ou croissance réduite",
+        "Symptômes ne correspondant pas de manière fiable aux classes de maïs prises en charge"
+      ],
+      "diagnosisMessage": "La photo semble montrer du maïs, mais elle ne correspond pas de manière fiable aux classes saines ou malades reconnues par ce modèle.",
+      "treatments": [
+        {
+          "name": "Prendre des photos supplémentaires",
+          "category": "diagnosis_support",
+          "description": "Prenez des photos nettes de la plante entière et des deux faces des feuilles atteintes.",
+          "costLevel": null,
+          "estimatedCost": null
+        },
+        {
+          "name": "Éviter un traitement non confirmé",
+          "category": "field_management",
+          "description": "N’appliquez aucun traitement sur la seule base de ce résultat.",
+          "costLevel": null,
+          "estimatedCost": null
+        },
+        {
+          "name": "Demander une inspection locale",
+          "category": "expert_support",
+          "description": "Gardez le matériel végétal atteint à l’écart jusqu’à son inspection par un agent de vulgarisation local.",
+          "costLevel": null,
+          "estimatedCost": null,
+          "requiresLocalVerification": true
+        }
+      ],
+      "voiceMessage": "Je n’ai pas pu identifier cette affection du maïs avec suffisamment de confiance. Prenez d’autres photos nettes et consultez un agent de vulgarisation local avant tout traitement."
+    },
+    "cassava_healthy": {
+      "id": "cassava_healthy",
+      "name": "Manioc sain",
+      "type": "healthy",
+      "symptoms": [
+        "Feuilles de forme normale",
+        "Feuilles généralement vertes et uniformes",
+        "Absence de forte mosaïque",
+        "Absence de flétrissement important ou de dépérissement des tiges"
+      ],
+      "diagnosisMessage": "Le plant de manioc paraît sain.",
+      "treatments": [],
+      "voiceMessage": "Votre manioc paraît sain. Continuez à surveiller les feuilles, les tiges et les racines pour détecter tout changement inhabituel."
+    },
+    "cassava_brown_streak_disease": {
+      "id": "cassava_brown_streak_disease",
+      "name": "Maladie des stries brunes du manioc",
+      "type": "viral",
+      "symptoms": [
+        "Motifs jaunes ou chlorotiques sur les feuilles",
+        "Stries brunes sur les tiges",
+        "Zones nécrotiques brunes ou foncées à l’intérieur des racines tubéreuses",
+        "Étranglements possibles des racines",
+        "Dégâts racinaires graves possibles malgré peu de symptômes foliaires"
+      ],
+      "diagnosisMessage": "Le plant de manioc présente des signes compatibles avec la maladie des stries brunes du manioc.",
+      "curativeTreatment": false,
+      "additionalPhotoRecommended": "root",
+      "treatments": [
+        {
+          "name": "Ne pas réutiliser les boutures infectées",
+          "category": "prevention",
+          "description": "N’utilisez pas comme matériel de plantation les tiges provenant de plants présentant des symptômes.",
+          "costLevel": "free",
+          "estimatedCost": 0
+        },
+        {
+          "name": "Utiliser du matériel de plantation sain",
+          "category": "prevention",
+          "description": "Utilisez des boutures de manioc saines provenant de sources fiables.",
+          "costLevel": "variable",
+          "estimatedCost": "5 000 à 10 000 CDF par botte de boutures contenant 50 à 100 tiges, selon la disponibilité locale et la variété."
+        },
+        {
+          "name": "Utiliser des variétés résistantes ou tolérantes",
+          "category": "prevention",
+          "description": "Utilisez, lorsqu’elles sont disponibles, des variétés de manioc recommandées localement pour leur résistance ou leur tolérance.",
+          "costLevel": "variable",
+          "estimatedCost": null
+        },
+        {
+          "name": "Retirer les plants infectés",
+          "category": "field_management",
+          "description": "Retirez les plants fortement symptomatiques lorsque cela est recommandé et possible afin de réduire les sources d’infection.",
+          "costLevel": "low",
+          "estimatedCost": null
+        }
+      ],
+      "voiceMessage": "Votre manioc pourrait être atteint de la maladie des stries brunes. Il s’agit d’une maladie virale. Si possible, photographiez aussi l’intérieur d’une racine atteinte afin de mieux confirmer le diagnostic. Voici des options pour limiter sa propagation."
+    },
+    "cassava_bacterial_blight": {
+      "id": "cassava_bacterial_blight",
+      "name": "Bactériose vasculaire du manioc",
+      "type": "bacterial",
+      "symptoms": [
+        "Taches foliaires anguleuses et imbibées d’eau",
+        "Lésions brunes sur les feuilles",
+        "Flétrissement des feuilles",
+        "Chute des feuilles",
+        "Dépérissement des pousses ou des tiges",
+        "Présence possible d’un exsudat bactérien"
+      ],
+      "diagnosisMessage": "Le plant de manioc présente des signes compatibles avec la bactériose vasculaire du manioc.",
+      "curativeTreatment": "limited",
+      "treatments": [
+        {
+          "name": "Utiliser du matériel de plantation sain",
+          "category": "prevention",
+          "description": "Ne multipliez pas le manioc avec des boutures provenant de plants présentant des symptômes de bactériose.",
+          "costLevel": "variable",
+          "estimatedCost": null
+        },
+        {
+          "name": "Retirer le matériel gravement infecté",
+          "category": "field_management",
+          "description": "Retirez les plants ou parties végétales gravement atteints lorsque cela est possible.",
+          "costLevel": "low",
+          "estimatedCost": null
+        },
+        {
+          "name": "Désinfecter les outils de coupe",
+          "category": "prevention",
+          "description": "Nettoyez les outils ayant servi à couper du manioc infecté avant de les utiliser sur des plants sains. Rincez-les à l’eau puis désinfectez-les, si possible, avec de l’alcool éthylique à 70–100 %. Laissez-les sécher à l’air pendant plusieurs minutes.",
+          "costLevel": "low",
+          "estimatedCost": "Environ 2 700 CDF pour 1 kg d’alcool éthylique à 85 %. Les coûts peuvent varier selon la disponibilité locale et la quantité achetée."
+        },
+        {
+          "name": "Planter des variétés résistantes",
+          "category": "prevention",
+          "description": "Utilisez, lorsqu’elles sont disponibles, des variétés adaptées localement et résistantes ou tolérantes.",
+          "costLevel": "variable",
+          "estimatedCost": "4 600 à 11 000 CDF par botte de 50 à 100 tiges, selon la variété et la disponibilité locale. Des variétés résistantes peuvent être proposées gratuitement ou à prix subventionné par les services de vulgarisation ou les instituts de recherche."
+        }
+      ],
+      "voiceMessage": "Votre manioc pourrait être atteint de bactériose vasculaire. N’utilisez pas les plants atteints comme matériel de plantation et nettoyez les outils de coupe avant de les employer sur des plants sains."
+    },
+    "cassava_mosaic_disease": {
+      "id": "cassava_mosaic_disease",
+      "name": "Mosaïque du manioc",
+      "type": "viral",
+      "symptoms": [
+        "Mosaïque jaune et verte sur les feuilles",
+        "Déformation des feuilles",
+        "Réduction de la taille des feuilles",
+        "Enroulement des feuilles",
+        "Rabougrissement de la plante"
+      ],
+      "diagnosisMessage": "Le plant de manioc présente des signes compatibles avec la mosaïque du manioc.",
+      "curativeTreatment": false,
+      "treatments": [
+        {
+          "name": "Retirer les plants gravement atteints",
+          "category": "field_management",
+          "description": "Retirez les plants fortement symptomatiques lorsque cela est approprié afin de réduire les sources d’infection.",
+          "costLevel": "low",
+          "estimatedCost": null
+        },
+        {
+          "name": "Ne pas réutiliser les tiges infectées",
+          "category": "prevention",
+          "description": "Ne prélevez pas de boutures sur les plants de manioc présentant des symptômes de mosaïque.",
+          "costLevel": "free",
+          "estimatedCost": 0
+        },
+        {
+          "name": "Utiliser des boutures saines",
+          "category": "prevention",
+          "description": "Utilisez du matériel de plantation sain provenant de sources fiables.",
+          "costLevel": "variable",
+          "estimatedCost": "4 600 à 11 000 CDF par botte de 50 à 100 tiges, selon la variété et la disponibilité locale."
+        },
+        {
+          "name": "Planter des variétés résistantes",
+          "category": "prevention",
+          "description": "Utilisez, lorsqu’elles sont disponibles, des variétés recommandées localement et résistantes à la mosaïque du manioc.",
+          "costLevel": "variable",
+          "estimatedCost": "4 600 à 11 000 CDF par botte de 50 à 100 tiges, selon la variété et la disponibilité locale. Du matériel résistant peut être proposé gratuitement ou à prix subventionné par les services de vulgarisation ou les instituts de recherche."
+        }
+      ],
+      "voiceMessage": "Votre manioc pourrait être atteint de la mosaïque du manioc. Cette maladie est causée par un virus; les fongicides ne la guériront donc pas. N’utilisez pas les plants atteints pour produire de nouvelles boutures. Voici des options pour limiter sa propagation."
+    },
+    "cassava_unknown": {
+      "id": "cassava_unknown",
+      "name": "Affection inconnue du manioc",
+      "type": "unknown",
+      "symptoms": [
+        "Changements inhabituels de couleur ou de forme des feuilles",
+        "Flétrissement, dégâts sur les tiges, insectes ou changements des racines",
+        "Symptômes ne correspondant pas de manière fiable aux classes de manioc prises en charge"
+      ],
+      "diagnosisMessage": "La photo semble montrer du manioc, mais elle ne correspond pas de manière fiable aux classes saines ou malades reconnues par ce modèle.",
+      "treatments": [
+        {
+          "name": "Prendre des photos supplémentaires",
+          "category": "diagnosis_support",
+          "description": "Prenez des photos nettes de la plante entière, de la tige, des racines atteintes et des deux faces des feuilles.",
+          "costLevel": null,
+          "estimatedCost": null
+        },
+        {
+          "name": "Éviter de déplacer les boutures atteintes",
+          "category": "prevention",
+          "description": "Ne distribuez pas les boutures atteintes et n’appliquez aucun traitement sur la seule base de ce résultat.",
+          "costLevel": null,
+          "estimatedCost": null
+        },
+        {
+          "name": "Demander une inspection locale",
+          "category": "expert_support",
+          "description": "Marquez le plant afin qu’un agent de vulgarisation local puisse l’inspecter.",
+          "costLevel": null,
+          "estimatedCost": null,
+          "requiresLocalVerification": true
+        }
+      ],
+      "voiceMessage": "Je n’ai pas pu identifier cette affection du manioc avec suffisamment de confiance. Prenez d’autres photos nettes et consultez un agent de vulgarisation local avant tout traitement ou partage de boutures."
+    },
+    "rice_healthy": {
+      "id": "rice_healthy",
+      "name": "Riz sain",
+      "type": "healthy",
+      "symptoms": [
+        "Feuilles généralement vertes et uniformes",
+        "Tallage normal",
+        "Absence de lésions importantes ou de panachure jaune",
+        "Développement normal de la plante"
+      ],
+      "diagnosisMessage": "Le plant de riz paraît sain.",
+      "treatments": [],
+      "voiceMessage": "Votre riz paraît sain. Continuez à surveiller toute apparition inhabituelle de taches, jaunissement, stries ou flétrissement."
+    },
+    "rice_bacterial_leaf_blight": {
+      "id": "rice_bacterial_leaf_blight",
+      "name": "Bactériose foliaire du riz",
+      "type": "bacterial",
+      "symptoms": [
+        "Lésions imbibées d’eau près de la pointe ou du bord des feuilles",
+        "Lésions jaunes progressant le long de la feuille",
+        "Lésions pouvant devenir gris-blanc",
+        "Dessèchement possible des feuilles",
+        "Flétrissement possible des jeunes plants lors d’attaques graves"
+      ],
+      "diagnosisMessage": "Le plant de riz présente des signes compatibles avec la bactériose foliaire.",
+      "curativeTreatment": "limited",
+      "treatments": [
+        {
+          "name": "Utiliser des variétés résistantes",
+          "category": "prevention",
+          "description": "Utilisez des variétés de riz recommandées localement et résistantes ou tolérantes à la bactériose foliaire.",
+          "costLevel": null,
+          "estimatedCost": "Généralement peu accessibles aux petits exploitants en RDC, mais parfois disponibles auprès des services de vulgarisation ou des instituts de recherche."
+        },
+        {
+          "name": "Utiliser des semences saines",
+          "category": "prevention",
+          "description": "Plantez des semences saines provenant de sources fiables.",
+          "costLevel": "variable",
+          "estimatedCost": "Les semences ordinaires de riz coûtent environ 4 600 à 6 000 CDF par kg, selon la variété et la disponibilité locale."
+        },
+        {
+          "name": "Éviter l’excès d’azote",
+          "category": "field_management",
+          "description": "Évitez un apport excessif d’engrais azoté, qui peut accroître la sensibilité à la bactériose foliaire.",
+          "costLevel": "variable",
+          "estimatedCost": "La différence de coût dépend de l’engrais utilisé auparavant. Les engrais azotés se vendent généralement de 80 000 à 100 000 CDF le sac de 50 kg, selon le type et la disponibilité locale."
+        }
+      ],
+      "voiceMessage": "Votre riz pourrait être atteint de bactériose foliaire. Je peux expliquer les options de gestion et aider à en estimer le coût."
+    },
+    "rice_blast": {
+      "id": "rice_blast",
+      "name": "Pyriculariose du riz",
+      "type": "fungal",
+      "symptoms": [
+        "Lésions foliaires en forme de losange ou de fuseau",
+        "Centre gris ou blanchâtre des lésions",
+        "Bord brun ou rougeâtre des lésions",
+        "Atteinte possible des feuilles, des nœuds ou des panicules",
+        "Une infection du cou peut empêcher le remplissage des grains"
+      ],
+      "diagnosisMessage": "Le plant de riz présente des signes compatibles avec la pyriculariose.",
+      "curativeTreatment": "limited",
+      "treatments": [
+        {
+          "name": "Utiliser des variétés résistantes",
+          "category": "prevention",
+          "description": "Plantez, lorsqu’elles sont disponibles, des variétés de riz adaptées localement et résistantes à la pyriculariose.",
+          "costLevel": "variable",
+          "estimatedCost": null
+        },
+        {
+          "name": "Éviter l’excès d’azote",
+          "category": "field_management",
+          "description": "Évitez les apports excessifs d’engrais azoté, car ils peuvent accroître la sensibilité à la pyriculariose.",
+          "costLevel": "free",
+          "estimatedCost": 0
+        },
+        {
+          "name": "Gérer les résidus de culture infectés",
+          "category": "field_management",
+          "description": "Gérez les résidus de riz infectés selon les pratiques adaptées au contexte local.",
+          "costLevel": "low",
+          "estimatedCost": null
+        }
+      ],
+      "voiceMessage": "Votre riz pourrait être atteint de pyriculariose. Je peux d’abord proposer des options de gestion peu coûteuses, puis expliquer les autres traitements possibles."
+    },
+    "rice_yellow_mottle_disease": {
+      "id": "rice_yellow_mottle_disease",
+      "name": "Panachure jaune du riz",
+      "type": "viral",
+      "symptoms": [
+        "Panachure jaune et verte des feuilles",
+        "Jaunissement des feuilles",
+        "Rabougrissement de la plante",
+        "Réduction du tallage",
+        "Mauvais développement des panicules",
+        "Réduction de la production de grains"
+      ],
+      "diagnosisMessage": "Le plant de riz présente des signes compatibles avec la panachure jaune du riz.",
+      "curativeTreatment": false,
+      "treatments": [
+        {
+          "name": "Retirer les plants gravement atteints",
+          "category": "field_management",
+          "description": "Retirez les plants gravement atteints lorsque cela est approprié afin de réduire les sources potentielles d’infection.",
+          "costLevel": "low",
+          "estimatedCost": null
+        },
+        {
+          "name": "Utiliser des variétés résistantes",
+          "category": "prevention",
+          "description": "Utilisez, lorsqu’elles sont disponibles, des variétés de riz recommandées localement et résistantes ou tolérantes à la panachure jaune.",
+          "costLevel": "variable",
+          "estimatedCost": null
+        },
+        {
+          "name": "Nettoyer les outils agricoles",
+          "category": "prevention",
+          "description": "Nettoyez les outils et le matériel lors des déplacements entre les zones de riz atteintes et non atteintes.",
+          "costLevel": "low",
+          "estimatedCost": "Environ 2 700 CDF pour 1 kg d’alcool éthylique à 85 %. Les coûts peuvent varier selon la disponibilité locale et la quantité achetée."
+        }
+      ],
+      "voiceMessage": "Votre riz pourrait être atteint de panachure jaune. Cette maladie est causée par un virus; les fongicides ne la guériront donc pas. Je peux expliquer comment limiter sa propagation."
+    },
+    "rice_unknown": {
+      "id": "rice_unknown",
+      "name": "Affection inconnue du riz",
+      "type": "unknown",
+      "symptoms": [
+        "Lésions, jaunissement ou flétrissement inhabituels",
+        "Dégâts d’insectes, hauteur inhabituelle ou changements des panicules",
+        "Symptômes ne correspondant pas de manière fiable aux classes de riz prises en charge"
+      ],
+      "diagnosisMessage": "La photo semble montrer du riz, mais elle ne correspond pas de manière fiable aux classes saines ou malades reconnues par ce modèle.",
+      "treatments": [
+        {
+          "name": "Prendre des photos supplémentaires",
+          "category": "diagnosis_support",
+          "description": "Prenez des photos nettes de la plante entière, des faces des feuilles, de la base de la tige et de la panicule lorsqu’elle est présente.",
+          "costLevel": null,
+          "estimatedCost": null
+        },
+        {
+          "name": "Éviter un traitement non confirmé",
+          "category": "field_management",
+          "description": "N’appliquez aucun traitement sur la seule base de ce résultat.",
+          "costLevel": null,
+          "estimatedCost": null
+        },
+        {
+          "name": "Demander une inspection locale",
+          "category": "expert_support",
+          "description": "Marquez les zones atteintes jusqu’à leur inspection par un agent de vulgarisation local.",
+          "costLevel": null,
+          "estimatedCost": null,
+          "requiresLocalVerification": true
+        }
+      ],
+      "voiceMessage": "Je n’ai pas pu identifier cette affection du riz avec suffisamment de confiance. Prenez d’autres photos nettes et consultez un agent de vulgarisation local avant tout traitement."
+    }
+  }
+}

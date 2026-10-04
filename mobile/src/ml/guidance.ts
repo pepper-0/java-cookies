@@ -1,4 +1,7 @@
-import guidanceJson from './guidance.json';
+import englishGuidanceJson from './guidance.en.json';
+import frenchGuidanceJson from './guidance.fr.json';
+
+import type { AppLocale } from '@/localization';
 
 export type DiseaseTreatment = {
   name: string;
@@ -30,9 +33,16 @@ type GuidanceCatalog = {
 };
 
 // JSON imports widen string literals, while the catalog validator enforces the narrower contract.
-const catalog = guidanceJson as GuidanceCatalog;
+const catalogs: Record<AppLocale, GuidanceCatalog> = {
+  en: englishGuidanceJson as GuidanceCatalog,
+  fr: frenchGuidanceJson as GuidanceCatalog,
+};
 
-export function getDiseaseDiagnosis(diagnosisId: string | null | undefined) {
+export function getDiseaseDiagnosis(
+  diagnosisId: string | null | undefined,
+  locale: AppLocale = 'en',
+) {
+  const catalog = catalogs[locale] ?? catalogs.en;
   if (!diagnosisId) return catalog.fallback;
   return catalog.diagnoses[diagnosisId] ?? catalog.fallback;
 }

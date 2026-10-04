@@ -5,24 +5,31 @@ import { ActivityIndicator, Alert, StyleSheet, Switch, Text, View } from 'react-
 
 import { SelectField } from '@/components/selection-field';
 import { ActionButton, Card, Screen, SectionTitle } from '@/components/ui';
-import { languageSelectOptions, normalizeLanguage } from '@/constants/profile-options';
+import { getAppLanguageSelectOptions, normalizeLanguage } from '@/constants/profile-options';
+import {
+  APP_LANGUAGE_SETTING_KEY,
+  languageFromLocale,
+  localeFromLanguage,
+  useTranslation,
+} from '@/localization';
 import { getSetting, setSetting } from '@/storage/database';
 import { colors, spacing } from '@/theme';
 
 const settingKeys = {
-  language: 'settings_language',
+  language: APP_LANGUAGE_SETTING_KEY,
   audioGuidance: 'audio_guidance_enabled',
   notifications: 'notifications_enabled',
 } as const;
 
 export default function SettingsScreen() {
   const db = useSQLiteContext();
-  const [language, setLanguage] = useState('English');
+  const { locale, setLocale, t } = useTranslation();
+  const [language, setLanguage] = useState(languageFromLocale(locale));
   const [audioGuidance, setAudioGuidance] = useState(false);
   const [notifications, setNotifications] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -37,7 +44,12 @@ export default function SettingsScreen() {
         ]);
         if (!active) return;
 
-        setLanguage(normalizeLanguage(savedLanguage, 'English'));
+        const normalizedLanguage = normalizeLanguage(savedLanguage, languageFromLocale(locale));
+        setLanguage(
+          normalizedLanguage === 'English' || normalizedLanguage === 'French'
+            ? normalizedLanguage
+            : languageFromLocale(locale),
+        );
         setAudioGuidance(savedAudioGuidance === '1');
         setNotifications(savedNotifications === '1');
         setLoading(false);
@@ -47,35 +59,36 @@ export default function SettingsScreen() {
         if (!active) return;
         setLoading(false);
         Alert.alert(
-          'Could Not Load Settings',
-          error instanceof Error ? error.message : 'Try again.',
+          t('settings.loadError'),
+          error instanceof Error ? error.message : t('common.tryAgain'),
         );
       });
 
       return () => {
         active = false;
       };
-    }, [db]),
+    }, [db, locale, t]),
   );
 
   function markChanged() {
-    setSavedMessage(null);
+    setSaved(false);
   }
 
   async function saveSettings() {
     try {
       setSaving(true);
-      setSavedMessage(null);
+      setSaved(false);
       await Promise.all([
         setSetting(db, settingKeys.language, language),
         setSetting(db, settingKeys.audioGuidance, audioGuidance ? '1' : '0'),
         setSetting(db, settingKeys.notifications, notifications ? '1' : '0'),
       ]);
-      setSavedMessage('Settings saved on this device.');
+      setLocale(localeFromLanguage(language));
+      setSaved(true);
     } catch (error) {
       Alert.alert(
-        'Could Not Save Settings',
-        error instanceof Error ? error.message : 'Try again.',
+        t('settings.saveError'),
+        error instanceof Error ? error.message : t('common.tryAgain'),
       );
     } finally {
       setSaving(false);
@@ -84,30 +97,30 @@ export default function SettingsScreen() {
 
   return (
     <Screen
-      eyebrow="Local Preferences"
-      title="Settings"
-      subtitle="Choose preferences for future language, audio, and notification features."
+      eyebrow={t('settings.eyebrow')}
+      title={t('settings.title')}
+      subtitle={t('settings.subtitle')}
     >
-      <SectionTitle>App Preferences</SectionTitle>
+      <SectionTitle>{t('settings.appPreferences')}</SectionTitle>
       <Card>
         {loading ? (
           <ActivityIndicator color={colors.primary} size="large" />
         ) : (
           <>
             <SelectField
-              hint="Interface translation will be added in a later iteration."
-              label="App Language"
+              hint={t('settings.languageHint')}
+              label={t('settings.appLanguage')}
               onChange={(value) => {
                 markChanged();
                 setLanguage(value);
               }}
-              options={languageSelectOptions}
+              options={getAppLanguageSelectOptions(t)}
               value={language}
             />
             <View style={styles.divider} />
             <PreferenceToggle
-              description="Save your preference for spoken field guidance. Audio is not active yet."
-              label="Audio Guidance"
+              description={t('settings.audioDescription')}
+              label={t('settings.audio')}
               onChange={(value) => {
                 markChanged();
                 setAudioGuidance(value);
@@ -116,29 +129,29 @@ export default function SettingsScreen() {
             />
             <View style={styles.divider} />
             <PreferenceToggle
-              description="Save your preference for future reminders. No notifications are scheduled yet."
-              label="Notifications"
+              description={t('settings.notificationsDescription')}
+              label={t('settings.notifications')}
               onChange={(value) => {
                 markChanged();
                 setNotifications(value);
               }}
               value={notifications}
             />
-            <ActionButton label="Save Settings" loading={saving} onPress={saveSettings} />
-            {savedMessage ? <Text style={styles.confirmation}>{savedMessage}</Text> : null}
+            <ActionButton label={t('settings.save')} loading={saving} onPress={saveSettings} />
+            {saved ? <Text style={styles.confirmation}>{t('settings.saved')}</Text> : null}
           </>
         )}
       </Card>
 
-      <SectionTitle>About</SectionTitle>
+      <SectionTitle>{t('settings.about')}</SectionTitle>
       <Card>
-        <SettingRow label="Application" value="LimaDRC" />
+        <SettingRow label={t('settings.application')} value="LimaDRC" />
         <View style={styles.divider} />
-        <SettingRow label="Build Stage" value="Iteration 2" />
+        <SettingRow label={t('settings.buildStage')} value={t('settings.iteration')} />
       </Card>
 
       <Text style={styles.note}>
-        Preferences are stored locally. These controls do not change other parts of the app yet.
+        {t('settings.note')}
       </Text>
     </Screen>
   );

@@ -1,24 +1,60 @@
 const assert = require('node:assert/strict');
 
-const guidance = require('../src/ml/guidance.json');
+const catalogs = [
+  require('../src/ml/guidance.en.json'),
+  require('../src/ml/guidance.fr.json'),
+];
 const labels = require('../src/ml/labels.json');
 
 const classIds = Object.values(labels);
-assert.deepEqual(
-  Object.keys(guidance.diagnoses),
-  classIds,
-  'Guidance diagnoses must match the model class IDs and order.',
-);
+assert.deepEqual(catalogs.map((catalog) => catalog.locale), ['en', 'fr']);
 
-validateDiagnosis(guidance.template, 'template');
-validateDiagnosis(guidance.fallback, 'fallback');
+for (const guidance of catalogs) {
+  assert.deepEqual(
+    Object.keys(guidance.diagnoses),
+    classIds,
+    `${guidance.locale} guidance diagnoses must match the model class IDs and order.`,
+  );
 
-for (const [diagnosisId, diagnosis] of Object.entries(guidance.diagnoses)) {
-  validateDiagnosis(diagnosis, diagnosisId);
-  assert.equal(diagnosis.id, diagnosisId, `${diagnosisId}.id must match its lookup key.`);
+  validateDiagnosis(guidance.template, `${guidance.locale}.template`);
+  validateDiagnosis(guidance.fallback, `${guidance.locale}.fallback`);
+
+  for (const [diagnosisId, diagnosis] of Object.entries(guidance.diagnoses)) {
+    validateDiagnosis(diagnosis, `${guidance.locale}.${diagnosisId}`);
+    assert.equal(
+      diagnosis.id,
+      diagnosisId,
+      `${guidance.locale}.${diagnosisId}.id must match its lookup key.`,
+    );
+  }
 }
 
-console.log(`Validated ${classIds.length} diagnosis guidance records.`);
+const [englishGuidance, frenchGuidance] = catalogs;
+assert.equal(frenchGuidance.version, englishGuidance.version, 'Catalog versions must match.');
+for (const diagnosisId of classIds) {
+  const englishDiagnosis = englishGuidance.diagnoses[diagnosisId];
+  const frenchDiagnosis = frenchGuidance.diagnoses[diagnosisId];
+  assert.equal(
+    frenchDiagnosis.symptoms.length,
+    englishDiagnosis.symptoms.length,
+    `${diagnosisId} symptom counts must match across locales.`,
+  );
+  assert.equal(
+    frenchDiagnosis.treatments.length,
+    englishDiagnosis.treatments.length,
+    `${diagnosisId} treatment counts must match across locales.`,
+  );
+  assert.equal(frenchDiagnosis.type, englishDiagnosis.type, `${diagnosisId} types must match.`);
+  frenchDiagnosis.treatments.forEach((treatment, index) => {
+    assert.equal(
+      treatment.category,
+      englishDiagnosis.treatments[index].category,
+      `${diagnosisId} treatment categories must match across locales.`,
+    );
+  });
+}
+
+console.log(`Validated ${classIds.length} diagnosis guidance records in ${catalogs.length} locales.`);
 
 function validateDiagnosis(diagnosis, path) {
   for (const field of ['id', 'name', 'type', 'diagnosisMessage', 'voiceMessage']) {

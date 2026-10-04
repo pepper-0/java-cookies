@@ -4,12 +4,33 @@ import { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Screen } from '@/components/ui';
+import { getCropLabel } from '@/constants/profile-options';
+import { type TranslationKey, useTranslation } from '@/localization';
 import { getDiseaseDiagnosis } from '@/ml/guidance';
 import { saveObservation } from '@/storage/database';
 import { colors, radius, spacing } from '@/theme';
 
+const codeTranslationKeys: Record<string, TranslationKey> = {
+  healthy: 'code.healthy',
+  viral: 'code.viral',
+  fungal: 'code.fungal',
+  bacterial: 'code.bacterial',
+  unknown: 'code.unknown',
+  field_management: 'code.field_management',
+  prevention: 'code.prevention',
+  chemical: 'code.chemical',
+  diagnosis_support: 'code.diagnosis_support',
+  expert_support: 'code.expert_support',
+  low: 'code.low',
+  variable: 'code.variable',
+  expensive: 'code.expensive',
+  free: 'code.free',
+  root: 'code.root',
+};
+
 export default function ResultScreen() {
   const db = useSQLiteContext();
+  const { locale, t } = useTranslation();
   const params = useLocalSearchParams<{
     imageUri: string;
     diagnosisId: string;
@@ -23,14 +44,14 @@ export default function ResultScreen() {
   );
   const confidence = useMemo(() => Number(params.confidence) || 0, [params.confidence]);
   const diagnosis = useMemo(
-    () => getDiseaseDiagnosis(params.diagnosisId),
-    [params.diagnosisId],
+    () => getDiseaseDiagnosis(params.diagnosisId, locale),
+    [locale, params.diagnosisId],
   );
   const displayedImageStatus = params.imageUri ? imageStatus : 'error';
 
   async function save() {
     if (!params.imageUri || !params.diagnosisId || !params.crop) {
-      Alert.alert('Missing result', 'Return to Diagnose and choose a photo again.');
+      Alert.alert(t('result.missing'), t('result.missingBody'));
       return;
     }
     try {
@@ -43,7 +64,7 @@ export default function ResultScreen() {
       });
       setSaved(true);
     } catch (error) {
-      Alert.alert('Could not save', error instanceof Error ? error.message : 'Try again.');
+      Alert.alert(t('result.saveError'), error instanceof Error ? error.message : t('common.tryAgain'));
     } finally {
       setSaving(false);
     }
@@ -51,14 +72,14 @@ export default function ResultScreen() {
 
   return (
     <Screen
-      eyebrow="Mock Diagnosis"
+      eyebrow={t('result.eyebrow')}
       title={diagnosis.name}
-      subtitle="Diagnosis details and field guidance are stored on this device and remain available offline."
+      subtitle={t('result.subtitle')}
     >
       <View style={styles.imageFrame}>
         {params.imageUri ? (
           <Image
-            accessibilityLabel="Crop photo used for this diagnosis"
+            accessibilityLabel={t('result.photoAccessibility')}
             onError={() => setImageStatus('error')}
             onLoad={() => setImageStatus('loaded')}
             onLoadStart={() => setImageStatus('loading')}
@@ -71,30 +92,28 @@ export default function ResultScreen() {
         {displayedImageStatus === 'loading' ? (
           <View style={styles.imageState}>
             <ActivityIndicator color={colors.primary} size="large" />
-            <Text style={styles.imageStateTitle}>Loading Crop Photo</Text>
+            <Text style={styles.imageStateTitle}>{t('result.loadingPhoto')}</Text>
           </View>
         ) : null}
 
         {displayedImageStatus === 'error' ? (
           <View style={styles.imageState}>
             <Text style={styles.imageErrorIcon}>!</Text>
-            <Text style={styles.imageStateTitle}>Crop Photo Unavailable</Text>
-            <Text style={styles.imageStateBody}>
-              Return to Diagnose and choose the photo again.
-            </Text>
+            <Text style={styles.imageStateTitle}>{t('result.photoUnavailable')}</Text>
+            <Text style={styles.imageStateBody}>{t('result.photoUnavailableBody')}</Text>
           </View>
         ) : null}
 
         {displayedImageStatus === 'loaded' ? (
           <View style={styles.imageCaption}>
-            <Text style={styles.imageCaptionText}>Analyzed Crop Photo</Text>
+            <Text style={styles.imageCaptionText}>{t('result.analyzedPhoto')}</Text>
           </View>
         ) : null}
       </View>
 
       {displayedImageStatus === 'error' ? (
         <ActionButton
-          label="Choose Another Photo"
+          label={t('result.chooseAnother')}
           onPress={() => router.replace('/diagnose')}
           tone="secondary"
         />
@@ -102,21 +121,21 @@ export default function ResultScreen() {
 
       <Card>
         <View style={styles.metricRow}>
-          <Metric label="Crop" value={capitalize(params.crop || 'cassava')} />
-          <Metric label="Confidence" value={`${Math.round(confidence * 100)}%`} />
+          <Metric label={t('result.crop')} value={getCropLabel(capitalize(params.crop || 'cassava'), t)} />
+          <Metric label={t('result.confidence')} value={`${Math.round(confidence * 100)}%`} />
         </View>
         <View style={styles.divider} />
-        <Text style={styles.label}>Diagnosis ID</Text>
+        <Text style={styles.label}>{t('result.diagnosisId')}</Text>
         <Text style={styles.code}>{diagnosis.id}</Text>
-        <Text style={styles.label}>Condition Type</Text>
-        <Text style={styles.metricValue}>{formatLabel(diagnosis.type)}</Text>
+        <Text style={styles.label}>{t('result.conditionType')}</Text>
+        <Text style={styles.metricValue}>{formatCodeLabel(diagnosis.type, t)}</Text>
       </Card>
 
       <Card>
-        <Text style={styles.adviceTitle}>Diagnosis Details</Text>
+        <Text style={styles.adviceTitle}>{t('result.details')}</Text>
         <Text style={styles.adviceBody}>{diagnosis.diagnosisMessage}</Text>
 
-        <Text style={styles.guidanceHeading}>Symptoms to Check</Text>
+        <Text style={styles.guidanceHeading}>{t('result.symptoms')}</Text>
         <View style={styles.actionList}>
           {diagnosis.symptoms.map((symptom) => (
             <View key={symptom} style={styles.actionRow}>
@@ -127,82 +146,80 @@ export default function ResultScreen() {
         </View>
 
         {diagnosis.symptoms.length === 0 ? (
-          <Text style={styles.adviceBody}>No specific symptoms are available for this result.</Text>
+          <Text style={styles.adviceBody}>{t('result.noSymptoms')}</Text>
         ) : null}
 
         {diagnosis.additionalPhotoRecommended ? (
           <Text style={styles.photoRecommendation}>
-            Additional photo recommended: {formatLabel(diagnosis.additionalPhotoRecommended)}
+            {t('result.additionalPhoto', {
+              target: formatCodeLabel(diagnosis.additionalPhotoRecommended, t),
+            })}
           </Text>
         ) : null}
 
         {diagnosis.curativeTreatment !== undefined ? (
           <Text style={styles.treatmentOutlook}>
             {diagnosis.curativeTreatment === false
-              ? 'No curative treatment is listed for this condition.'
+              ? t('result.noCurative')
               : diagnosis.curativeTreatment === true
-                ? 'Curative treatment options are listed for this condition.'
-                : 'Curative treatment options are limited.'}
+                ? t('result.curative')
+                : t('result.limitedCurative')}
           </Text>
         ) : null}
 
-        <Text style={styles.guidanceHeading}>Recommended Actions</Text>
+        <Text style={styles.guidanceHeading}>{t('result.actions')}</Text>
         {diagnosis.treatments.length > 0 ? (
           <View style={styles.treatmentList}>
             {diagnosis.treatments.map((treatment, index) => (
               <View key={`${treatment.name}-${index}`} style={styles.treatmentCard}>
                 <Text style={styles.treatmentName}>{treatment.name}</Text>
-                <Text style={styles.treatmentCategory}>{formatLabel(treatment.category)}</Text>
+                <Text style={styles.treatmentCategory}>
+                  {formatCodeLabel(treatment.category, t)}
+                </Text>
                 <Text style={styles.adviceBody}>{treatment.description}</Text>
 
                 {treatment.costLevel ? (
                   <Text style={styles.treatmentMeta}>
-                    Cost level: {formatLabel(treatment.costLevel)}
+                    {t('result.costLevel', { value: formatCodeLabel(treatment.costLevel, t) })}
                   </Text>
                 ) : null}
 
                 {treatment.estimatedCost !== null ? (
                   <Text style={styles.treatmentMeta}>
-                    Estimated cost:{' '}
-                    {treatment.estimatedCost === 0
-                      ? 'No direct material cost listed.'
-                      : String(treatment.estimatedCost)}
+                    {t('result.estimatedCost', {
+                      value: treatment.estimatedCost === 0
+                        ? t('result.noDirectCost')
+                        : String(treatment.estimatedCost),
+                    })}
                   </Text>
                 ) : null}
 
                 {treatment.requiresLocalVerification ? (
-                  <Text style={styles.verification}>Local verification required before use.</Text>
+                  <Text style={styles.verification}>{t('result.localVerification')}</Text>
                 ) : null}
               </View>
             ))}
           </View>
         ) : (
-          <Text style={styles.adviceBody}>
-            No treatment actions are listed for this result. Continue normal crop monitoring.
-          </Text>
+          <Text style={styles.adviceBody}>{t('result.noTreatments')}</Text>
         )}
 
-        <Text style={styles.guidanceHeading}>Field Summary</Text>
+        <Text style={styles.guidanceHeading}>{t('result.fieldSummary')}</Text>
         <Text style={styles.adviceBody}>{diagnosis.voiceMessage}</Text>
 
-        <Text style={styles.disclaimer}>
-          Image recognition provides a likely result, not a confirmed diagnosis. Confirm treatment,
-          availability, and costs with a local agricultural expert.
-        </Text>
+        <Text style={styles.disclaimer}>{t('result.disclaimer')}</Text>
       </Card>
 
       {saved ? (
         <Card>
-          <Text style={styles.savedTitle}>Saved Offline</Text>
-          <Text style={styles.adviceBody}>
-            The observation is marked PENDING and will remain on this device if the backend is unavailable.
-          </Text>
-          <ActionButton label="Return Home" onPress={() => router.replace('/')} />
+          <Text style={styles.savedTitle}>{t('result.savedTitle')}</Text>
+          <Text style={styles.adviceBody}>{t('result.savedBody')}</Text>
+          <ActionButton label={t('result.returnHome')} onPress={() => router.replace('/')} />
         </Card>
       ) : (
         <ActionButton
           disabled={displayedImageStatus !== 'loaded'}
-          label="Save observation"
+          label={t('result.save')}
           loading={saving}
           onPress={save}
         />
@@ -224,8 +241,10 @@ function capitalize(value: string) {
   return value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
 }
 
-function formatLabel(value: string) {
-  return value.split('_').map(capitalize).join(' ');
+function formatCodeLabel(value: string, t: (key: TranslationKey) => string) {
+  return codeTranslationKeys[value]
+    ? t(codeTranslationKeys[value])
+    : value.split('_').map(capitalize).join(' ');
 }
 
 const styles = StyleSheet.create({

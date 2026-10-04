@@ -1,3 +1,5 @@
+import type { TranslationKey } from '@/localization';
+
 export const cropOptions = ['Maize', 'Cassava', 'Rice', 'Other'] as const;
 
 export const languageOptions = [
@@ -9,8 +11,43 @@ export const languageOptions = [
   'Kikongo',
 ] as const;
 
-export const cropSelectOptions = cropOptions.map((value) => ({ label: value, value }));
-export const languageSelectOptions = languageOptions.map((value) => ({ label: value, value }));
+export const appLanguageOptions = ['English', 'French'] as const;
+
+type Translator = (key: TranslationKey) => string;
+
+const cropTranslationKeys: Record<(typeof cropOptions)[number], TranslationKey> = {
+  Maize: 'crop.Maize',
+  Cassava: 'crop.Cassava',
+  Rice: 'crop.Rice',
+  Other: 'crop.Other',
+};
+
+const languageTranslationKeys: Record<(typeof languageOptions)[number], TranslationKey> = {
+  English: 'language.English',
+  French: 'language.French',
+  Lingala: 'language.Lingala',
+  Swahili: 'language.Swahili',
+  Tshiluba: 'language.Tshiluba',
+  Kikongo: 'language.Kikongo',
+};
+
+export function getCropSelectOptions(t: Translator) {
+  return cropOptions.map((value) => ({ label: t(cropTranslationKeys[value]), value }));
+}
+
+export function getLanguageSelectOptions(t: Translator) {
+  return languageOptions.map((value) => ({ label: t(languageTranslationKeys[value]), value }));
+}
+
+export function getAppLanguageSelectOptions(t: Translator) {
+  return appLanguageOptions.map((value) => ({ label: t(languageTranslationKeys[value]), value }));
+}
+
+export function getCropLabel(value: string, t: Translator) {
+  return value in cropTranslationKeys
+    ? t(cropTranslationKeys[value as (typeof cropOptions)[number]])
+    : value;
+}
 
 export function normalizeLanguage(value: string | null | undefined, fallback = 'French') {
   if (!value) return fallback;

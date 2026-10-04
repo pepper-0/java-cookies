@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useTranslation } from '@/localization';
 import { colors, radius, spacing } from '@/theme';
 
 type ScreenProps = PropsWithChildren<{
@@ -130,12 +131,13 @@ export function FormField({ label, hint, ...props }: FieldProps) {
 }
 
 export function StatusBadge({ status }: { status: 'PENDING' | 'SYNCED' | 'ONLINE' | 'OFFLINE' }) {
+  const { t } = useTranslation();
   const positive = status === 'SYNCED' || status === 'ONLINE';
   return (
     <View style={[styles.badge, positive ? styles.badgeSuccess : styles.badgeWarning]}>
       <View style={[styles.badgeDot, positive ? styles.dotSuccess : styles.dotWarning]} />
       <Text style={[styles.badgeText, positive ? styles.textSuccess : styles.textWarning]}>
-        {status}
+        {t(`status.${status}`)}
       </Text>
     </View>
   );

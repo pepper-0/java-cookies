@@ -6,13 +6,16 @@ import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 import { MultiSelectField, SelectField } from '@/components/selection-field';
 import { ActionButton, Card, FormField, Screen, SectionTitle, StatusBadge } from '@/components/ui';
 import {
-  cropSelectOptions,
-  languageSelectOptions,
+  getCropLabel,
+  getCropSelectOptions,
+  getLanguageSelectOptions,
   normalizeLanguage,
   parsePrimaryCrops,
   serializePrimaryCrops,
 } from '@/constants/profile-options';
-import { getObservations, getProfile, saveProfile } from '@/storage/database';
+import { APP_LANGUAGE_SETTING_KEY, localeFromLanguage, useTranslation } from '@/localization';
+import { getDiseaseDiagnosis } from '@/ml/guidance';
+import { getObservations, getProfile, saveProfile, setSetting } from '@/storage/database';
 import type { Observation } from '@/storage/types';
 import { colors, radius, spacing } from '@/theme';
 
@@ -26,6 +29,7 @@ const blankForm = {
 
 export default function FarmScreen() {
   const db = useSQLiteContext();
+  const { locale, setLocale, t } = useTranslation();
   const { onboarding } = useLocalSearchParams<{ onboarding?: string }>();
   const isOnboarding = onboarding === '1';
   const [form, setForm] = useState(blankForm);
@@ -65,11 +69,11 @@ export default function FarmScreen() {
 
   async function save() {
     if (!form.name.trim()) {
-      Alert.alert('Name Required', 'Enter the farmer name before saving.');
+      Alert.alert(t('farm.nameRequired'), t('farm.nameRequiredBody'));
       return;
     }
     if (selectedCrops.includes('Other') && !otherCrop.trim()) {
-      Alert.alert('Other Crop Required', 'Enter the name of the other crop before saving.');
+      Alert.alert(t('farm.otherRequired'), t('farm.otherRequiredBody'));
       return;
     }
     try {
@@ -79,13 +83,17 @@ export default function FarmScreen() {
         primaryCrops: serializePrimaryCrops(selectedCrops, otherCrop),
       });
       if (isOnboarding) {
+        if (form.preferredLanguage === 'English' || form.preferredLanguage === 'French') {
+          await setSetting(db, APP_LANGUAGE_SETTING_KEY, form.preferredLanguage);
+          setLocale(localeFromLanguage(form.preferredLanguage));
+        }
         router.replace('/onboarding');
         return;
       }
-      setSavedMessage('Farmer and farm saved locally as PENDING.');
+      setSavedMessage(t('farm.saved'));
       await reload();
     } catch (error) {
-      Alert.alert('Could not save profile', error instanceof Error ? error.message : 'Try again.');
+      Alert.alert(t('farm.saveError'), error instanceof Error ? error.message : t('common.tryAgain'));
     } finally {
       setSaving(false);
     }
@@ -93,73 +101,73 @@ export default function FarmScreen() {
 
   return (
     <Screen
-      eyebrow={isOnboarding ? 'First-Time Setup' : 'Local Profile'}
-      title={isOnboarding ? 'Create Your Farm Profile' : 'My Farm'}
+      eyebrow={isOnboarding ? t('farm.firstSetup') : t('farm.localProfile')}
+      title={isOnboarding ? t('farm.createTitle') : t('farm.title')}
       subtitle={isOnboarding
-        ? 'Tell us about your farm. These details stay on this device and can be completed without internet.'
-        : 'These details are stored on this device first and never require a connection.'}
+        ? t('farm.onboardingSubtitle')
+        : t('farm.subtitle')}
     >
       <Card>
         <FormField
           autoCapitalize="words"
-          label="Farmer Name"
+          label={t('farm.farmerName')}
           onChangeText={(value) => update('name', value)}
-          placeholder="e.g. Marie Kabeya"
+          placeholder={t('farm.nameExample')}
           value={form.name}
         />
         <FormField
           autoCapitalize="words"
-          label="Province"
+          label={t('farm.province')}
           onChangeText={(value) => update('province', value)}
-          placeholder="e.g. Kasaï-Central"
+          placeholder={t('farm.provinceExample')}
           value={form.province}
         />
         <FormField
           autoCapitalize="words"
-          label="Territory"
+          label={t('farm.territory')}
           onChangeText={(value) => update('territory', value)}
-          placeholder="Territory"
+          placeholder={t('farm.territory')}
           value={form.territory}
         />
         <FormField
           autoCapitalize="words"
-          label="Village"
+          label={t('farm.village')}
           onChangeText={(value) => update('village', value)}
-          placeholder="Village"
+          placeholder={t('farm.village')}
           value={form.village}
         />
         <SelectField
-          label="Preferred Language"
+          label={t('farm.preferredLanguage')}
           onChange={(value) => update('preferredLanguage', value)}
-          options={languageSelectOptions}
+          options={getLanguageSelectOptions(t)}
           value={form.preferredLanguage}
         />
         <MultiSelectField
-          hint="Choose every crop grown on this farm."
-          label="Primary Crops"
+          hint={t('farm.primaryCropsHint')}
+          label={t('farm.primaryCrops')}
           onChange={(values) => {
             setSavedMessage(null);
             setSelectedCrops(values);
             if (!values.includes('Other')) setOtherCrop('');
           }}
-          options={cropSelectOptions}
+          options={getCropSelectOptions(t)}
           values={selectedCrops}
         />
         {selectedCrops.includes('Other') ? (
           <FormField
             autoCapitalize="words"
-            hint="Use commas if you need to enter more than one additional crop."
-            label="Other Crop"
+            hint={t('farm.otherCropHint')}
+            label={t('farm.otherCrop')}
             onChangeText={(value) => {
               setSavedMessage(null);
               setOtherCrop(value);
             }}
-            placeholder="e.g. Beans"
+            placeholder={t('farm.otherCropExample')}
             value={otherCrop}
           />
         ) : null}
         <ActionButton
-          label={isOnboarding ? 'Save and Continue' : 'Save Locally'}
+          label={isOnboarding ? t('farm.saveContinue') : t('farm.saveLocally')}
           loading={saving}
           onPress={save}
         />
@@ -173,20 +181,25 @@ export default function FarmScreen() {
 
       {!isOnboarding ? (
         <>
-          <SectionTitle>Saved Observations</SectionTitle>
+          <SectionTitle>{t('farm.savedObservations')}</SectionTitle>
           {observations.length === 0 ? (
-            <Card><Text style={styles.empty}>No observations yet. Diagnose a crop to add one.</Text></Card>
+            <Card><Text style={styles.empty}>{t('farm.noObservations')}</Text></Card>
           ) : (
             observations.map((observation) => (
               <Card key={observation.local_id}>
                 <View style={styles.observationRow}>
                   <Image source={{ uri: observation.image_uri }} style={styles.thumbnail} />
                   <View style={styles.observationCopy}>
-                    <Text style={styles.observationTitle}>{formatDiagnosis(observation.diagnosis_id)}</Text>
-                    <Text style={styles.observationDetail}>
-                      {capitalize(observation.crop)} · {Math.round(observation.confidence * 100)}% confidence
+                    <Text style={styles.observationTitle}>
+                      {getDiseaseDiagnosis(observation.diagnosis_id, locale).name}
                     </Text>
-                    <Text style={styles.observationDetail}>{new Date(observation.timestamp).toLocaleString()}</Text>
+                    <Text style={styles.observationDetail}>
+                      {getCropLabel(capitalize(observation.crop), t)} ·{' '}
+                      {t('farm.confidence', { value: Math.round(observation.confidence * 100) })}
+                    </Text>
+                    <Text style={styles.observationDetail}>
+                      {new Date(observation.timestamp).toLocaleString(locale === 'fr' ? 'fr-CD' : 'en')}
+                    </Text>
                   </View>
                   <StatusBadge status={observation.sync_status} />
                 </View>
@@ -201,10 +214,6 @@ export default function FarmScreen() {
 
 function capitalize(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-function formatDiagnosis(value: string) {
-  return value.split('_').map(capitalize).join(' ');
 }
 
 const styles = StyleSheet.create({

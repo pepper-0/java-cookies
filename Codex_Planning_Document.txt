@@ -103,3 +103,13 @@
 - [x] Android bundle check passes with the local JSON included.
 - [ ] Review and localize the sample agricultural guidance with appropriate DRC agricultural experts before production use.
 - [ ] Confirm every guidance section renders correctly in the Android emulator.
+
+## English and French Localization
+
+- [x] Added a persistent offline localization provider with English fallback and French support.
+- [x] Connected navigation, onboarding, farm profile, diagnosis, result, synchronization, settings, shared selectors, accessibility labels, and status badges to translated strings.
+- [x] Limited the app-interface selector to the currently supported English and French locales while retaining all preferred-language choices in the farm profile.
+- [x] Added a complete French diagnosis catalog with the same 15 class IDs and disease diagnosis schema as the English catalog.
+- [x] Added cross-locale contract validation for diagnosis coverage, symptom counts, treatment counts, types, and treatment categories.
+- [ ] Have a native French speaker and DRC agricultural expert review terminology, treatment guidance, and prices.
+- [ ] Confirm English/French switching and all translated layouts in the Android emulator.

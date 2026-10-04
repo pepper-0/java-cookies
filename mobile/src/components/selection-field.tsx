@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useTranslation } from '@/localization';
 import { colors, radius, spacing } from '@/theme';
 
 export type SelectOption = {
@@ -28,16 +29,18 @@ export function SelectField({
   onChange,
   hint,
   disabled = false,
-  placeholder = 'Select an option',
+  placeholder,
 }: SelectFieldProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const selectedLabel = options.find((option) => option.value === value)?.label;
+  const displayedPlaceholder = placeholder ?? t('common.selectOption');
 
   return (
     <View style={styles.fieldWrap}>
       <Text style={styles.fieldLabel}>{label}</Text>
       <Pressable
-        accessibilityLabel={`${label}: ${selectedLabel ?? 'not selected'}`}
+        accessibilityLabel={`${label}: ${selectedLabel ?? t('common.notSelected')}`}
         accessibilityRole="button"
         accessibilityState={{ disabled, expanded }}
         disabled={disabled}
@@ -50,7 +53,7 @@ export function SelectField({
         ]}
       >
         <Text style={[styles.triggerText, !selectedLabel && styles.placeholder]}>
-          {selectedLabel ?? placeholder}
+          {selectedLabel ?? displayedPlaceholder}
         </Text>
         <Text style={styles.chevron}>{expanded ? '▲' : '▼'}</Text>
       </Pressable>
@@ -103,8 +106,9 @@ export function MultiSelectField({
   onChange,
   hint,
   disabled = false,
-  placeholder = 'Select one or more',
+  placeholder,
 }: MultiSelectFieldProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const selectedLabels = options
     .filter((option) => values.includes(option.value))
@@ -121,7 +125,7 @@ export function MultiSelectField({
     <View style={styles.fieldWrap}>
       <Text style={styles.fieldLabel}>{label}</Text>
       <Pressable
-        accessibilityLabel={`${label}: ${selectedLabels.join(', ') || 'none selected'}`}
+        accessibilityLabel={`${label}: ${selectedLabels.join(', ') || t('common.noneSelected')}`}
         accessibilityRole="button"
         accessibilityState={{ disabled, expanded }}
         disabled={disabled}
@@ -134,7 +138,7 @@ export function MultiSelectField({
         ]}
       >
         <Text style={[styles.triggerText, selectedLabels.length === 0 && styles.placeholder]}>
-          {selectedLabels.join(', ') || placeholder}
+          {selectedLabels.join(', ') || placeholder || t('common.selectOneOrMore')}
         </Text>
         <Text style={styles.chevron}>{expanded ? '▲' : '▼'}</Text>
       </Pressable>
@@ -169,7 +173,7 @@ export function MultiSelectField({
             onPress={() => setExpanded(false)}
             style={({ pressed }) => [styles.doneButton, pressed && styles.pressed]}
           >
-            <Text style={styles.doneText}>Done</Text>
+            <Text style={styles.doneText}>{t('common.done')}</Text>
           </Pressable>
         </View>
       ) : null}

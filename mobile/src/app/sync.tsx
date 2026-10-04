@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, FormField, Screen, SectionTitle, StatusBadge } from '@/components/ui';
+import { useTranslation } from '@/localization';
 import { checkBackendHealth, DEFAULT_API_URL } from '@/services/api';
 import { syncPendingRecords } from '@/services/sync';
 import { getPendingCount, getSetting, setSetting } from '@/storage/database';
@@ -13,13 +14,14 @@ type ConnectionState = 'UNKNOWN' | 'ONLINE' | 'OFFLINE';
 
 export default function SyncScreen() {
   const db = useSQLiteContext();
+  const { locale, t } = useTranslation();
   const [apiUrl, setApiUrl] = useState(DEFAULT_API_URL);
   const [pendingCount, setPendingCount] = useState(0);
   const [lastSyncAt, setLastSyncAt] = useState<string | null>(null);
   const [connection, setConnection] = useState<ConnectionState>('UNKNOWN');
   const [checking, setChecking] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [message, setMessage] = useState('Test the backend connection before syncing.');
+  const [message, setMessage] = useState(() => t('sync.initial'));
 
   const reload = useCallback(async () => {
     const [storedUrl, count, lastSync] = await Promise.all([
@@ -41,7 +43,7 @@ export default function SyncScreen() {
   async function saveAddress() {
     const value = apiUrl.trim().replace(/\/+$/, '');
     if (!/^https?:\/\//i.test(value)) {
-      Alert.alert('Invalid address', 'Enter a full address beginning with http:// or https://.');
+      Alert.alert(t('sync.invalidAddress'), t('sync.invalidAddressBody'));
       return null;
     }
     await setSetting(db, 'api_base_url', value);
@@ -56,10 +58,10 @@ export default function SyncScreen() {
       if (!value) return;
       const health = await checkBackendHealth(value);
       setConnection('ONLINE');
-      setMessage(`Backend replied: ${health.status}.`);
+      setMessage(t('sync.backendReply', { status: health.status }));
     } catch (error) {
       setConnection('OFFLINE');
-      setMessage(error instanceof Error ? error.message : 'Backend is unreachable.');
+      setMessage(error instanceof Error ? error.message : t('sync.unreachable'));
     } finally {
       setChecking(false);
     }
@@ -76,17 +78,25 @@ export default function SyncScreen() {
       await reload();
 
       if (result.errors.length > 0) {
-        setMessage(`${result.synced} of ${result.attempted} records confirmed. ${result.errors[0]}`);
+        setMessage(t('sync.partial', {
+          synced: result.synced,
+          attempted: result.attempted,
+          error: result.errors[0],
+        }));
       } else if (result.attempted === 0) {
-        setMessage('Backend is online. There are no pending records.');
+        setMessage(t('sync.nonePending'));
       } else {
-        setMessage(`Backend confirmed ${result.synced} record${result.synced === 1 ? '' : 's'}.`);
+        setMessage(
+          result.synced === 1
+            ? t('sync.oneConfirmed')
+            : t('sync.manyConfirmed', { count: result.synced }),
+        );
       }
     } catch (error) {
       setConnection('OFFLINE');
-      setMessage(
-        `${error instanceof Error ? error.message : 'Sync failed.'} Local records remain PENDING.`,
-      );
+      setMessage(t('sync.recordsRemain', {
+        error: error instanceof Error ? error.message : t('sync.failed'),
+      }));
       await reload();
     } finally {
       setSyncing(false);
@@ -95,22 +105,24 @@ export default function SyncScreen() {
 
   return (
     <Screen
-      eyebrow="Offline Queue"
-      title="Sync Status"
-      subtitle="Records stay on this device until the prototype backend acknowledges them."
+      eyebrow={t('sync.eyebrow')}
+      title={t('sync.title')}
+      subtitle={t('sync.subtitle')}
       right={connection === 'UNKNOWN' ? undefined : <StatusBadge status={connection} />}
     >
       <View style={styles.metrics}>
         <View style={styles.metricCard}>
           <Card>
             <Text style={styles.metricValue}>{pendingCount}</Text>
-            <Text style={styles.metricLabel}>Pending Records</Text>
+            <Text style={styles.metricLabel}>{t('sync.pendingRecords')}</Text>
           </Card>
         </View>
         <View style={styles.metricCard}>
           <Card>
-            <Text style={styles.metricSmall}>{lastSyncAt ? formatDate(lastSyncAt) : 'Never'}</Text>
-            <Text style={styles.metricLabel}>Last Confirmed Sync</Text>
+            <Text style={styles.metricSmall}>
+              {lastSyncAt ? formatDate(lastSyncAt, locale) : t('sync.never')}
+            </Text>
+            <Text style={styles.metricLabel}>{t('sync.lastConfirmed')}</Text>
           </Card>
         </View>
       </View>
@@ -119,9 +131,9 @@ export default function SyncScreen() {
         <FormField
           autoCapitalize="none"
           autoCorrect={false}
-          hint="Android emulator default: http://10.0.2.2:8000. For a phone, use this computer's LAN IP."
+          hint={t('sync.addressHint')}
           keyboardType="url"
-          label="Backend address"
+          label={t('sync.address')}
           onChangeText={(value) => {
             setApiUrl(value);
             setConnection('UNKNOWN');
@@ -130,32 +142,34 @@ export default function SyncScreen() {
         />
         <View style={styles.buttonRow}>
           <View style={styles.buttonCell}>
-            <ActionButton label="Test connection" loading={checking} onPress={testConnection} tone="secondary" />
+            <ActionButton label={t('sync.test')} loading={checking} onPress={testConnection} tone="secondary" />
           </View>
           <View style={styles.buttonCell}>
-            <ActionButton label="Sync now" loading={syncing} onPress={syncNow} />
+            <ActionButton label={t('sync.now')} loading={syncing} onPress={syncNow} />
           </View>
         </View>
       </Card>
 
       <Card>
-        <Text style={styles.messageTitle}>Latest Activity</Text>
+        <Text style={styles.messageTitle}>{t('sync.latest')}</Text>
         <Text style={styles.message}>{message}</Text>
       </Card>
 
-      <SectionTitle>Queue Rules</SectionTitle>
+      <SectionTitle>{t('sync.rules')}</SectionTitle>
       <View style={styles.rules}>
-        <Text style={styles.rule}>• Saving never requires internet.</Text>
-        <Text style={styles.rule}>• Failed requests do not delete local data.</Text>
-        <Text style={styles.rule}>• Only a backend acknowledgement marks a record SYNCED.</Text>
+        <Text style={styles.rule}>{t('sync.rule1')}</Text>
+        <Text style={styles.rule}>{t('sync.rule2')}</Text>
+        <Text style={styles.rule}>{t('sync.rule3')}</Text>
       </View>
     </Screen>
   );
 }
 
-function formatDate(value: string) {
+function formatDate(value: string, locale: 'en' | 'fr') {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleString(locale === 'fr' ? 'fr-CD' : 'en');
 }
 
 const styles = StyleSheet.create({

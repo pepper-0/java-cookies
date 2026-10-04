@@ -4,31 +4,20 @@ import { useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Screen } from '@/components/ui';
+import { useTranslation } from '@/localization';
 import { setSetting } from '@/storage/database';
 import { colors, spacing } from '@/theme';
 
-const slides = [
-  {
-    step: '1',
-    title: 'Diagnose Crops Offline',
-    body: 'Take or select a crop photo. LimaDRC keeps the diagnosis flow available even when your connection is unreliable.',
-  },
-  {
-    step: '2',
-    title: 'Keep Observations Safe',
-    body: 'Farmer, farm, and diagnosis records are saved on this device first. A network failure will not delete them.',
-  },
-  {
-    step: '3',
-    title: 'Sync When Connected',
-    body: 'The Sync Status screen shows records waiting to upload and marks them synced only after the backend confirms receipt.',
-  },
-] as const;
-
 export default function OnboardingScreen() {
   const db = useSQLiteContext();
+  const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const [finishing, setFinishing] = useState(false);
+  const slides = [
+    { step: '1', title: t('onboarding.slide1Title'), body: t('onboarding.slide1Body') },
+    { step: '2', title: t('onboarding.slide2Title'), body: t('onboarding.slide2Body') },
+    { step: '3', title: t('onboarding.slide3Title'), body: t('onboarding.slide3Body') },
+  ];
   const slide = slides[index];
   const isLast = index === slides.length - 1;
 
@@ -45,8 +34,8 @@ export default function OnboardingScreen() {
       router.replace('/');
     } catch (error) {
       Alert.alert(
-        'Could Not Finish Setup',
-        error instanceof Error ? error.message : 'Try again.',
+        t('onboarding.finishError'),
+        error instanceof Error ? error.message : t('common.tryAgain'),
       );
     } finally {
       setFinishing(false);
@@ -55,10 +44,10 @@ export default function OnboardingScreen() {
 
   return (
     <Screen
-      eyebrow={`Quick Tour ${index + 1} of ${slides.length}`}
+      eyebrow={t('onboarding.tour', { current: index + 1, total: slides.length })}
       includeTopInset
       title={slide.title}
-      subtitle="A short introduction to the LimaDRC field workflow."
+      subtitle={t('onboarding.subtitle')}
     >
       <Card>
         <View style={styles.stepCircle}>
@@ -80,12 +69,12 @@ export default function OnboardingScreen() {
       <View style={styles.actions}>
         {index > 0 ? (
           <View style={styles.actionCell}>
-            <ActionButton label="Back" onPress={() => setIndex((current) => current - 1)} tone="quiet" />
+            <ActionButton label={t('onboarding.back')} onPress={() => setIndex((current) => current - 1)} tone="quiet" />
           </View>
         ) : null}
         <View style={styles.actionCell}>
           <ActionButton
-            label={isLast ? 'Start Using LimaDRC' : 'Next'}
+            label={isLast ? t('onboarding.start') : t('onboarding.next')}
             loading={finishing}
             onPress={next}
           />

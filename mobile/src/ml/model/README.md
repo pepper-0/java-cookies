@@ -23,6 +23,6 @@ Implement the runtime behind `src/ml/classifier.ts`. The screens, local database
 
 ## Local guidance
 
-`../guidance.json` contains offline diagnosis data keyed by `diagnosis_id`. Every known diagnosis, crop-specific unknown result, template, and fallback uses the same record schema: ID, name, disease type, symptoms, diagnosis message, structured treatments, and voice message. Treatments can also provide category, cost, and local-verification metadata. `../guidance.ts` performs the lookup and returns the same-schema fallback for an unrecognized future ID.
+`../guidance.en.json` and `../guidance.fr.json` contain English and French offline diagnosis data keyed by `diagnosis_id`. Every known diagnosis, crop-specific unknown result, template, and fallback uses the same record schema: ID, name, disease type, symptoms, diagnosis message, structured treatments, and voice message. Treatments can also provide category, cost, and local-verification metadata. `../guidance.ts` selects the active locale and returns the same-schema fallback for an unrecognized future ID.
 
 The guidance file is application content, not a model output. Its agricultural guidance, treatment details, and estimated costs must be reviewed and localized by appropriate DRC agricultural experts before production use.

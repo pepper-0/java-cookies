@@ -5,11 +5,13 @@ import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Screen, StatusBadge } from '@/components/ui';
+import { useTranslation } from '@/localization';
 import { getPendingCount, getProfile, getSetting, setSetting } from '@/storage/database';
 import { colors, radius, spacing } from '@/theme';
 
 export default function HomeScreen() {
   const db = useSQLiteContext();
+  const { t } = useTranslation();
   const [pendingCount, setPendingCount] = useState(0);
   const [farmerName, setFarmerName] = useState<string | null>(null);
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
@@ -64,10 +66,10 @@ export default function HomeScreen() {
   if (checkingOnboarding) {
     return (
       <Screen
-        eyebrow="Offline Field Assistant"
+        eyebrow={t('home.eyebrow')}
         includeTopInset
         title="LimaDRC"
-        subtitle="Preparing your local farm workspace."
+        subtitle={t('home.preparing')}
       >
         <ActivityIndicator color={colors.primary} size="large" />
       </Screen>
@@ -76,46 +78,44 @@ export default function HomeScreen() {
 
   return (
     <Screen
-      eyebrow="Offline Field Assistant"
+      eyebrow={t('home.eyebrow')}
       includeTopInset
-      title={farmerName ? `Mbote, ${farmerName}` : 'LimaDRC'}
-      subtitle="Capture a crop concern, keep it safely on this device, and sync when a connection is available."
+      title={farmerName ? t('home.greeting', { name: farmerName }) : 'LimaDRC'}
+      subtitle={t('home.subtitle')}
     >
       <Card>
         <View style={styles.heroMark}><Text style={styles.heroMarkText}>L</Text></View>
-        <Text style={styles.heroTitle}>Check a Crop in the Field</Text>
-        <Text style={styles.body}>
-          Checkpoint 1 uses a local mock diagnosis while the image model is prepared.
-        </Text>
-        <ActionButton label="Diagnose crop" onPress={() => router.push('/diagnose')} />
+        <Text style={styles.heroTitle}>{t('home.heroTitle')}</Text>
+        <Text style={styles.body}>{t('home.heroBody')}</Text>
+        <ActionButton label={t('home.diagnose')} onPress={() => router.push('/diagnose')} />
       </Card>
 
       <View style={styles.grid}>
         <HomeTile
-          detail={farmerName ? 'Profile saved on device' : 'Add farmer and farm details'}
-          label="My Farm"
+          detail={farmerName ? t('home.profileSaved') : t('home.addDetails')}
+          label={t('home.myFarm')}
           onPress={() => router.push('/farm')}
         />
         <HomeTile
           badge={<StatusBadge status={pendingCount > 0 ? 'PENDING' : 'SYNCED'} />}
-          detail={`${pendingCount} record${pendingCount === 1 ? '' : 's'} waiting`}
-          label="Sync Status"
+          detail={pendingCount === 1 ? t('home.oneWaiting') : t('home.manyWaiting', { count: pendingCount })}
+          label={t('home.syncStatus')}
           onPress={() => router.push('/sync')}
         />
       </View>
 
       <View style={styles.grid}>
         <HomeTile
-          detail="Preview account and app preferences"
-          label="Settings"
+          detail={t('home.settingsDetail')}
+          label={t('home.settings')}
           onPress={() => router.push('/settings')}
         />
         <View style={styles.disabledTile}>
           <View>
-            <Text style={styles.disabledTitle}>Market Prices</Text>
-            <Text style={styles.disabledBody}>Available after the core checkpoint</Text>
+            <Text style={styles.disabledTitle}>{t('home.marketPrices')}</Text>
+            <Text style={styles.disabledBody}>{t('home.availableLater')}</Text>
           </View>
-          <Text style={styles.soon}>LATER</Text>
+          <Text style={styles.soon}>{t('home.later')}</Text>
         </View>
       </View>
     </Screen>
@@ -133,6 +133,8 @@ function HomeTile({
   onPress: () => void;
   badge?: ReactNode;
 }) {
+  const { t } = useTranslation();
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -142,7 +144,7 @@ function HomeTile({
       <Text style={styles.tileTitle}>{label}</Text>
       {badge}
       <Text style={styles.tileBody}>{detail}</Text>
-      <Text style={styles.tileArrow}>Open →</Text>
+      <Text style={styles.tileArrow}>{t('home.open')}</Text>
     </Pressable>
   );
 }

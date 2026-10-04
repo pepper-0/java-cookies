@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Screen } from '@/components/ui';
+import { getLocalGuidance } from '@/ml/guidance';
 import { saveObservation } from '@/storage/database';
 import { colors, radius, spacing } from '@/theme';
 
@@ -21,6 +22,7 @@ export default function ResultScreen() {
     params.imageUri ? 'loading' : 'error',
   );
   const confidence = useMemo(() => Number(params.confidence) || 0, [params.confidence]);
+  const guidance = useMemo(() => getLocalGuidance(params.diagnosisId), [params.diagnosisId]);
   const displayedImageStatus = params.imageUri ? imageStatus : 'error';
 
   async function save() {
@@ -47,8 +49,8 @@ export default function ResultScreen() {
   return (
     <Screen
       eyebrow="Mock Diagnosis"
-      title={formatDiagnosis(params.diagnosisId || 'cassava_mosaic_disease')}
-      subtitle="This hard-coded result validates the complete app flow before the real model is added."
+      title={guidance.title}
+      subtitle="Result-specific field guidance is stored on this device and remains available offline."
     >
       <View style={styles.imageFrame}>
         {params.imageUri ? (
@@ -106,11 +108,26 @@ export default function ResultScreen() {
       </Card>
 
       <Card>
-        <Text style={styles.adviceTitle}>Basic Field Guidance</Text>
-        <Text style={styles.adviceBody}>
-          Mark the affected plant, avoid moving cuttings from it, and ask a local extension agent to confirm the diagnosis before treatment or removal.
-        </Text>
-        <Text style={styles.disclaimer}>Prototype guidance only. It is not a confirmed diagnosis.</Text>
+        <Text style={styles.adviceTitle}>Local Field Guidance</Text>
+        <Text style={styles.adviceBody}>{guidance.summary}</Text>
+
+        <Text style={styles.guidanceHeading}>Recommended Actions</Text>
+        <View style={styles.actionList}>
+          {guidance.actions.map((action) => (
+            <View key={action} style={styles.actionRow}>
+              <Text style={styles.actionBullet}>•</Text>
+              <Text style={styles.actionText}>{action}</Text>
+            </View>
+          ))}
+        </View>
+
+        <Text style={styles.guidanceHeading}>What to Monitor</Text>
+        <Text style={styles.adviceBody}>{guidance.monitoring}</Text>
+
+        <Text style={styles.guidanceHeading}>When to Seek Help</Text>
+        <Text style={styles.adviceBody}>{guidance.seek_help}</Text>
+
+        <Text style={styles.disclaimer}>{guidance.disclaimer}</Text>
       </Card>
 
       {saved ? (
@@ -144,10 +161,6 @@ function Metric({ label, value }: { label: string; value: string }) {
 
 function capitalize(value: string) {
   return value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
-}
-
-function formatDiagnosis(value: string) {
-  return value.split('_').map(capitalize).join(' ');
 }
 
 const styles = StyleSheet.create({
@@ -206,6 +219,11 @@ const styles = StyleSheet.create({
   code: { color: colors.primary, fontSize: 14, fontWeight: '700' },
   adviceTitle: { color: colors.text, fontSize: 19, fontWeight: '800' },
   adviceBody: { color: colors.textMuted, fontSize: 15, lineHeight: 23 },
+  guidanceHeading: { color: colors.text, fontSize: 14, fontWeight: '800', marginTop: spacing.xs },
+  actionList: { gap: spacing.sm },
+  actionRow: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.sm },
+  actionBullet: { color: colors.primary, fontSize: 18, fontWeight: '900', lineHeight: 22 },
+  actionText: { color: colors.textMuted, flex: 1, fontSize: 15, lineHeight: 22 },
   disclaimer: { color: colors.warning, fontSize: 12, fontWeight: '700', lineHeight: 18 },
   savedTitle: { color: colors.success, fontSize: 19, fontWeight: '800' },
 });

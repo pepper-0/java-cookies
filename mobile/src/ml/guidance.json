@@ -1,0 +1,210 @@
+{
+  "version": 1,
+  "locale": "en",
+  "template": {
+    "title": "Sample Diagnosis Name",
+    "summary": "A short, plain-language explanation of what the result means.",
+    "actions": [
+      "Give one low-risk action the farmer can take now.",
+      "Give one action that reduces accidental spread.",
+      "Recommend local expert confirmation before treatment or removal."
+    ],
+    "monitoring": "Explain what to watch, where to look, and when to check again.",
+    "seek_help": "Explain which changes should prompt help from a local extension agent.",
+    "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+  },
+  "fallback": {
+    "title": "Guidance Unavailable",
+    "summary": "This diagnosis does not yet have local guidance in the app.",
+    "actions": [
+      "Keep the affected plant or field area marked so it can be checked again.",
+      "Avoid moving cuttings, seed, leaves, or tools from the affected area.",
+      "Ask a local extension agent to inspect the crop before treatment or removal."
+    ],
+    "monitoring": "Take another clear photo if symptoms change or spread to nearby plants.",
+    "seek_help": "Seek local help if symptoms spread quickly, plants begin dying, or food production is at risk.",
+    "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+  },
+  "diagnoses": {
+    "maize_healthy": {
+      "title": "Healthy Maize",
+      "summary": "The photo is most similar to healthy maize in the classes supported by this prototype.",
+      "actions": [
+        "Continue normal field care and record the date of this check.",
+        "Inspect several nearby plants instead of relying on one leaf.",
+        "Keep seed and tools clean when moving between fields."
+      ],
+      "monitoring": "Check again during regular field visits and photograph any new streaks, spots, rust-colored growth, or leaf drying.",
+      "seek_help": "Ask an extension agent for help if symptoms appear on several plants or the crop begins declining despite a healthy result.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "maize_streak_disease": {
+      "title": "Maize Streak Disease",
+      "summary": "The image resembles maize streak disease, which commonly appears as narrow pale or yellow streaks running along the leaf.",
+      "actions": [
+        "Mark the affected plants and compare them with nearby maize.",
+        "Do not save seed from plants that are weak or heavily affected.",
+        "Ask a local extension agent to confirm the result before removing plants or applying treatment."
+      ],
+      "monitoring": "Watch for new pale streaks, stunting, and symptoms spreading to younger plants.",
+      "seek_help": "Seek help if many young plants show streaking or growth is becoming uneven across the field.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "maize_northern_leaf_blight": {
+      "title": "Northern Leaf Blight",
+      "summary": "The image resembles northern leaf blight, often associated with long gray-green or tan lesions on maize leaves.",
+      "actions": [
+        "Mark affected areas and inspect leaves at different heights on nearby plants.",
+        "Avoid carrying wet infected leaves or residue into unaffected fields.",
+        "Discuss locally suitable resistant varieties and field practices with an extension agent."
+      ],
+      "monitoring": "Check whether lesions are increasing after humid or rainy conditions and whether upper leaves become affected.",
+      "seek_help": "Seek help if lesions reach the upper canopy, spread rapidly, or appear before flowering.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "maize_common_rust": {
+      "title": "Common Rust",
+      "summary": "The image resembles common rust, which can form small raised orange-brown or dark pustules on maize leaves.",
+      "actions": [
+        "Inspect both sides of several leaves for raised rust-colored spots.",
+        "Keep a record of where symptoms are concentrated in the field.",
+        "Ask an extension agent whether local varieties or management changes are recommended."
+      ],
+      "monitoring": "Watch whether pustules increase on younger leaves or begin covering large leaf areas.",
+      "seek_help": "Seek help if rust becomes widespread early in crop growth or leaves begin drying quickly.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "maize_unknown": {
+      "title": "Unknown Maize Condition",
+      "summary": "The photo appears to show maize, but it does not reliably match the healthy or maize disease classes supported by this model.",
+      "actions": [
+        "Take additional photos of the whole plant and both sides of affected leaves.",
+        "Do not apply treatment based only on this result.",
+        "Keep affected plant material separate until a local expert can inspect it."
+      ],
+      "monitoring": "Record changes in color, leaf shape, spots, streaks, insect damage, and the number of affected plants.",
+      "seek_help": "Ask an extension agent to inspect the crop if symptoms persist, spread, or reduce plant growth.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "cassava_healthy": {
+      "title": "Healthy Cassava",
+      "summary": "The photo is most similar to healthy cassava in the classes supported by this prototype.",
+      "actions": [
+        "Continue normal field care and record the date of this check.",
+        "Inspect several nearby plants and both young and older leaves.",
+        "Use clean tools and healthy-looking planting material for future cuttings."
+      ],
+      "monitoring": "Check again during regular visits and photograph new mosaic patterns, brown streaks, wilting, angular spots, or stem damage.",
+      "seek_help": "Ask an extension agent for help if several plants decline even though this photo was classified as healthy.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "cassava_brown_streak_disease": {
+      "title": "Cassava Brown Streak Disease",
+      "summary": "The image resembles cassava brown streak disease, which may involve yellow or brown leaf patterns, stem streaks, and root damage.",
+      "actions": [
+        "Mark the affected plants and do not distribute cuttings from them.",
+        "Inspect nearby cassava for similar leaf or stem symptoms.",
+        "Ask an extension agent to confirm the result and advise on clean planting material."
+      ],
+      "monitoring": "Watch for increasing leaf discoloration, brown stem streaks, and symptoms appearing in neighboring plants.",
+      "seek_help": "Seek help promptly if symptoms are widespread or harvested roots show brown, cork-like damage.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "cassava_bacterial_blight": {
+      "title": "Cassava Bacterial Blight",
+      "summary": "The image resembles cassava bacterial blight, which may cause angular leaf spots, wilting, leaf drop, or stem dieback.",
+      "actions": [
+        "Avoid handling affected plants when leaves are wet.",
+        "Clean tools before using them on healthy cassava and do not share affected cuttings.",
+        "Ask an extension agent to confirm the cause before removing plants."
+      ],
+      "monitoring": "Watch for water-soaked or angular spots, wilting shoots, sticky stem exudate, and spread after rain.",
+      "seek_help": "Seek help if shoots die back, many plants wilt, or symptoms spread rapidly after wet weather.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "cassava_mosaic_disease": {
+      "title": "Cassava Mosaic Disease",
+      "summary": "The image resembles cassava mosaic disease, commonly associated with patchy green and yellow leaf patterns and distorted leaves.",
+      "actions": [
+        "Mark the affected plant and do not use or distribute cuttings from it.",
+        "Inspect nearby cassava, especially young leaves, for similar mosaic patterns.",
+        "Ask a local extension agent to confirm the result before removal or replanting."
+      ],
+      "monitoring": "Watch for stronger mosaic patterns, twisted leaves, stunting, and symptoms appearing on neighboring plants.",
+      "seek_help": "Seek help if many plants are affected, young plants are stunted, or clean planting material is difficult to find.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "cassava_unknown": {
+      "title": "Unknown Cassava Condition",
+      "summary": "The photo appears to show cassava, but it does not reliably match the healthy or cassava disease classes supported by this model.",
+      "actions": [
+        "Take additional photos of the whole plant, stem, and both sides of affected leaves.",
+        "Do not distribute cuttings or apply treatment based only on this result.",
+        "Keep the plant marked for inspection by a local extension agent."
+      ],
+      "monitoring": "Record changes in leaf color, shape, wilting, stem damage, insects, and the number of affected plants.",
+      "seek_help": "Ask an extension agent to inspect the crop if symptoms persist, spread, or affect roots and stems.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "rice_healthy": {
+      "title": "Healthy Rice",
+      "summary": "The photo is most similar to healthy rice in the classes supported by this prototype.",
+      "actions": [
+        "Continue normal field care and record the date of this check.",
+        "Inspect rice in several parts of the field rather than relying on one leaf.",
+        "Clean tools and footwear before moving between fields."
+      ],
+      "monitoring": "Check again during regular visits and photograph new lesions, yellowing, drying leaf tips, or panicle damage.",
+      "seek_help": "Ask an extension agent for help if symptoms appear across the field despite this healthy result.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "rice_bacterial_leaf_blight": {
+      "title": "Bacterial Leaf Blight",
+      "summary": "The image resembles bacterial leaf blight, which may cause water-soaked streaks, yellowing, and drying from leaf tips or edges.",
+      "actions": [
+        "Mark affected field areas and avoid moving contaminated plant material or tools.",
+        "Avoid unnecessary leaf injury and discuss locally appropriate water and nutrient management.",
+        "Ask an extension agent to confirm the result before treatment."
+      ],
+      "monitoring": "Watch for lesions extending down the leaf, rapid yellowing, wilting seedlings, or spread after storms.",
+      "seek_help": "Seek help if young plants wilt, lesions spread rapidly, or large field areas begin drying.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "rice_blast": {
+      "title": "Rice Blast",
+      "summary": "The image resembles rice blast, often associated with spindle-shaped leaf lesions and possible damage at nodes or panicle necks.",
+      "actions": [
+        "Inspect nearby leaves, nodes, and panicle necks for related lesions.",
+        "Avoid moving affected straw or seed into unaffected fields.",
+        "Ask an extension agent about locally suitable varieties and nutrient management."
+      ],
+      "monitoring": "Watch for new spindle-shaped lesions, broken nodes, or panicles that whiten and fail to fill.",
+      "seek_help": "Seek help quickly if symptoms reach panicle necks, spread during humid weather, or threaten grain filling.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "rice_yellow_mottle_disease": {
+      "title": "Rice Yellow Mottle Disease",
+      "summary": "The image resembles rice yellow mottle disease, which may cause yellow or mottled leaves, stunting, and poor panicle development.",
+      "actions": [
+        "Mark affected patches and avoid moving plants, tools, or water from them into unaffected areas.",
+        "Clean tools and footwear after working in affected field sections.",
+        "Ask an extension agent to confirm the result and advise on locally appropriate resistant varieties."
+      ],
+      "monitoring": "Watch for expanding yellow patches, stunting, delayed flowering, and poor panicle emergence.",
+      "seek_help": "Seek help if symptoms spread between field patches or many plants become stunted.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    },
+    "rice_unknown": {
+      "title": "Unknown Rice Condition",
+      "summary": "The photo appears to show rice, but it does not reliably match the healthy or rice disease classes supported by this model.",
+      "actions": [
+        "Take additional photos of the whole plant, leaf surfaces, stem base, and panicle if present.",
+        "Do not apply treatment based only on this result.",
+        "Keep affected field areas marked until a local extension agent can inspect them."
+      ],
+      "monitoring": "Record changes in lesions, yellowing, wilting, insect damage, plant height, and panicle development.",
+      "seek_help": "Ask an extension agent to inspect the crop if symptoms persist, spread, or begin reducing plant growth or grain formation.",
+      "disclaimer": "Prototype guidance only. This result is not a confirmed diagnosis."
+    }
+  }
+}

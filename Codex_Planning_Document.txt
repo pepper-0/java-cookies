@@ -91,3 +91,14 @@
 - [x] Mobile TypeScript and Expo lint checks pass.
 - [x] Android bundle check passes.
 - [ ] Confirm the local photo renders on the diagnosis result screen in the Android emulator.
+
+## Local Diagnosis Guidance
+
+- [x] Added a versioned English JSON template with sample summary, actions, monitoring, escalation, and disclaimer fields.
+- [x] Added complete sample entries for all 15 `diagnosis_id` values plus a safe fallback for future unknown IDs.
+- [x] Replaced the hardcoded result advice with an offline lookup keyed by `diagnosis_id`.
+- [x] Added a contract test requiring exact guidance coverage for every model class and complete fields for every entry.
+- [x] Mobile TypeScript, Expo lint, and guidance-contract tests pass.
+- [x] Android bundle check passes with the local JSON included.
+- [ ] Review and localize the sample agricultural guidance with appropriate DRC agricultural experts before production use.
+- [ ] Confirm every guidance section renders correctly in the Android emulator.

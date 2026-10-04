@@ -20,3 +20,9 @@ Before integration, also provide:
 - a recommended confidence threshold.
 
 Implement the runtime behind `src/ml/classifier.ts`. The screens, local database, and sync service must continue to consume the existing `DiagnosisResult` contract.
+
+## Local guidance
+
+`../guidance.json` contains offline sample guidance keyed by `diagnosis_id`. Each entry provides a title, summary, recommended actions, monitoring guidance, escalation guidance, and disclaimer. `../guidance.ts` performs the lookup and returns a safe fallback for an unrecognized future ID.
+
+The guidance file is application content, not a model output. Its sample wording must be reviewed by appropriate local agricultural experts before production use.

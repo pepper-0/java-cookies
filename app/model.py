@@ -8,14 +8,11 @@ from PIL import Image
 from torchvision import models, transforms
 
 # Keep this in the alphabetical order used by torchvision.datasets.ImageFolder
-# when it trained the 12-class checkpoint in java_cookies.ipynb.
+# in the recorded nine-class training run in java_cookies.ipynb.
 CLASS_NAMES = [
     "cassava_bacterial_blight",
-    "cassava_brown_streak_disease",
-    "cassava_healthy",
     "cassava_mosaic_disease",
     "maize_common_rust",
-    "maize_healthy",
     "maize_northern_leaf_blight",
     "maize_streak_disease",
     "rice_bacterial_blight",

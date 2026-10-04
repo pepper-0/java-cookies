@@ -50,14 +50,13 @@ export default function ResultScreen() {
   const displayedImageStatus = params.imageUri ? imageStatus : 'error';
 
   async function save() {
-    if (!params.imageUri || !params.diagnosisId || !params.crop) {
+    if (!params.diagnosisId || !params.crop) {
       Alert.alert(t('result.missing'), t('result.missingBody'));
       return;
     }
     try {
       setSaving(true);
       await saveObservation(db, {
-        imageUri: params.imageUri,
         crop: params.crop,
         diagnosisId: params.diagnosisId,
         confidence,
@@ -218,7 +217,6 @@ export default function ResultScreen() {
         </Card>
       ) : (
         <ActionButton
-          disabled={displayedImageStatus !== 'loaded'}
           label={t('result.save')}
           loading={saving}
           onPress={save}

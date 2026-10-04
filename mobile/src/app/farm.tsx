@@ -1,7 +1,7 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
-import { Alert, Image, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { MultiSelectField, SelectField } from '@/components/selection-field';
 import { ActionButton, Card, FormField, Screen, SectionTitle, StatusBadge } from '@/components/ui';
@@ -17,7 +17,7 @@ import { APP_LANGUAGE_SETTING_KEY, localeFromLanguage, useTranslation } from '@/
 import { getDiseaseDiagnosis } from '@/ml/guidance';
 import { getObservations, getProfile, saveProfile, setSetting } from '@/storage/database';
 import type { Observation } from '@/storage/types';
-import { colors, radius, spacing } from '@/theme';
+import { colors, spacing } from '@/theme';
 
 const blankForm = {
   name: '',
@@ -188,7 +188,6 @@ export default function FarmScreen() {
             observations.map((observation) => (
               <Card key={observation.local_id}>
                 <View style={styles.observationRow}>
-                  <Image source={{ uri: observation.image_uri }} style={styles.thumbnail} />
                   <View style={styles.observationCopy}>
                     <Text style={styles.observationTitle}>
                       {getDiseaseDiagnosis(observation.diagnosis_id, locale).name}
@@ -221,7 +220,6 @@ const styles = StyleSheet.create({
   confirmationText: { color: colors.textMuted, flex: 1, fontSize: 13, lineHeight: 19 },
   empty: { color: colors.textMuted, fontSize: 14, lineHeight: 21 },
   observationRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm },
-  thumbnail: { backgroundColor: colors.surfaceMuted, borderRadius: radius.sm, height: 64, width: 64 },
   observationCopy: { flex: 1, gap: 4 },
   observationTitle: { color: colors.text, fontSize: 14, fontWeight: '800' },
   observationDetail: { color: colors.textMuted, fontSize: 12, lineHeight: 17 },

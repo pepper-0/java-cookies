@@ -8,7 +8,7 @@ The output contract contains:
 - `crop`: `maize`, `cassava`, or `rice`, derived from the class metadata; and
 - `confidence`: the selected class probability from 0 through 1.
 
-Severity is not part of the classifier, observation storage, or backend contract.
+The classifier output is limited to the diagnosis ID, crop, and confidence value.
 
 Before integration, also provide:
 

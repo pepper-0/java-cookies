@@ -110,13 +110,11 @@ export default function HomeScreen() {
           label={t('home.settings')}
           onPress={() => router.push('/settings')}
         />
-        <View style={styles.disabledTile}>
-          <View>
-            <Text style={styles.disabledTitle}>{t('home.marketPrices')}</Text>
-            <Text style={styles.disabledBody}>{t('home.availableLater')}</Text>
-          </View>
-          <Text style={styles.soon}>{t('home.later')}</Text>
-        </View>
+        <HomeTile
+          detail={t('home.marketPricesDetail')}
+          label={t('home.marketPrices')}
+          onPress={() => router.push('/market-prices')}
+        />
       </View>
     </Screen>
   );
@@ -166,11 +164,4 @@ const styles = StyleSheet.create({
   tileTitle: { color: colors.text, fontSize: 18, fontWeight: '800' },
   tileBody: { color: colors.textMuted, flex: 1, fontSize: 13, lineHeight: 19 },
   tileArrow: { color: colors.primary, fontSize: 14, fontWeight: '800' },
-  disabledTile: {
-    alignItems: 'center', backgroundColor: colors.surfaceMuted, borderRadius: radius.md,
-    flex: 1, justifyContent: 'space-between', minHeight: 170, opacity: 0.75, padding: spacing.md,
-  },
-  disabledTitle: { color: colors.text, fontSize: 16, fontWeight: '700' },
-  disabledBody: { color: colors.textMuted, fontSize: 13, marginTop: 4 },
-  soon: { color: colors.textMuted, fontSize: 10, fontWeight: '900', letterSpacing: 1 },
 });

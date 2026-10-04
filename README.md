@@ -1,6 +1,6 @@
 # LimaDRC App Shell
 
-Checkpoint 1 implementation of an offline-first Android agriculture app for smallholder farmers in the DRC. The repository deliberately stops before real image-model integration and optional market, speech, or mapping features.
+Checkpoint implementation of an offline-first Android agriculture app for smallholder farmers in the DRC. The repository deliberately stops before real image-model integration and live market, speech, or mapping services.
 
 ## What is implemented
 
@@ -9,7 +9,8 @@ Checkpoint 1 implementation of an offline-first Android agriculture app for smal
 - Android camera and gallery photo selection
 - isolated asynchronous mock classifier contract
 - MobileNetV3Small training, evaluation, and TFLite-export scaffold awaiting image datasets
-- durable app-local image copies and SQLite records
+- offline market-price screen with clearly labeled static demonstration prices
+- offline SQLite observation records without retaining crop photos or image URLs
 - locally saved farmer, farm, and observation data
 - explicit `PENDING` to `SYNCED` queue behavior
 - FastAPI health, farmer, farm, and observation endpoints
@@ -63,7 +64,7 @@ The default backend address is `http://10.0.2.2:8000`, which is correct for the 
 1. Start the backend.
 2. Launch the Android app and optionally save a farmer in **My farm**.
 3. Open **Diagnose crop**, take or select a cassava photo, and run the mock diagnosis.
-4. Save the observation. It is stored locally as `PENDING`.
+4. Save the observation. Its diagnosis metadata is stored locally as `PENDING`; the crop photo is not retained.
 5. Open **Sync status**. It shows the pending-record count.
 6. Test the backend connection, then tap **Sync now**.
 7. The backend confirms each POST and the app changes the local records to `SYNCED`.
@@ -71,4 +72,4 @@ The default backend address is `http://10.0.2.2:8000`, which is correct for the 
 
 ## Intentional stopping point
 
-There is no trained TFLite or ONNX model, TTS, market-price integration, or production registry integration. The dataset-ready training pipeline is documented in `mobilenetv3-training/README.md`, and the future app adapter is documented in `mobile/src/ml/model/README.md`.
+There is no trained TFLite or ONNX model, TTS, live market-price provider, or production registry integration. The bundled prices are invented demonstration values and must not be used for real transactions. The dataset-ready training pipeline is documented in `mobilenetv3-training/README.md`, and the future app adapter is documented in `mobile/src/ml/model/README.md`.

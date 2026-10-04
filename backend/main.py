@@ -13,6 +13,33 @@ from pydantic import BaseModel, Field
 
 
 DEFAULT_DATABASE_PATH = Path(__file__).parent / "database" / "limadrc.db"
+DATABASE_VERSION = 2
+
+OBSERVATION_COLUMNS = (
+    "local_id",
+    "farmer_id",
+    "farm_id",
+    "timestamp",
+    "crop",
+    "diagnosis_id",
+    "confidence",
+    "sync_status",
+    "received_at",
+)
+
+CREATE_OBSERVATIONS_TABLE_SQL = """
+CREATE TABLE observations (
+  local_id TEXT PRIMARY KEY NOT NULL,
+  farmer_id TEXT,
+  farm_id TEXT,
+  timestamp TEXT NOT NULL,
+  crop TEXT NOT NULL,
+  diagnosis_id TEXT NOT NULL,
+  confidence REAL NOT NULL,
+  sync_status TEXT NOT NULL,
+  received_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+)
+"""
 
 
 class FarmerPayload(BaseModel):
@@ -40,7 +67,6 @@ class ObservationPayload(BaseModel):
     farmer_id: str | None = None
     farm_id: str | None = None
     timestamp: str = Field(min_length=1)
-    image_uri: str = Field(min_length=1)
     crop: str = Field(min_length=1)
     diagnosis_id: str = Field(min_length=1)
     confidence: float = Field(ge=0, le=1)
@@ -56,8 +82,14 @@ class SyncResponse(BaseModel):
 def init_database(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(path) as connection:
+        current_version = connection.execute("PRAGMA user_version").fetchone()[0]
+        if current_version > DATABASE_VERSION:
+            raise RuntimeError(
+                "This database was created by a newer version of LimaDRC."
+            )
+
         connection.executescript(
-            """
+            f"""
             PRAGMA journal_mode = WAL;
 
             CREATE TABLE IF NOT EXISTS farmers (
@@ -82,20 +114,41 @@ def init_database(path: Path) -> None:
               received_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
 
-            CREATE TABLE IF NOT EXISTS observations (
-              local_id TEXT PRIMARY KEY NOT NULL,
-              farmer_id TEXT,
-              farm_id TEXT,
-              timestamp TEXT NOT NULL,
-              image_uri TEXT NOT NULL,
-              crop TEXT NOT NULL,
-              diagnosis_id TEXT NOT NULL,
-              confidence REAL NOT NULL,
-              sync_status TEXT NOT NULL,
-              received_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-            );
+            {CREATE_OBSERVATIONS_TABLE_SQL.replace("CREATE TABLE observations", "CREATE TABLE IF NOT EXISTS observations")};
             """
         )
+        if current_version < DATABASE_VERSION:
+            normalize_observations_table(connection)
+            connection.execute("VACUUM")
+            connection.execute(f"PRAGMA user_version = {DATABASE_VERSION}")
+
+
+def normalize_observations_table(connection: sqlite3.Connection) -> None:
+    column_names = tuple(
+        row[1] for row in connection.execute("PRAGMA table_info(observations)")
+    )
+    if column_names == OBSERVATION_COLUMNS:
+        return
+
+    missing_columns = [
+        column for column in OBSERVATION_COLUMNS if column not in column_names
+    ]
+    if missing_columns:
+        missing = ", ".join(missing_columns)
+        raise RuntimeError(f"Observation database is missing required columns: {missing}")
+
+    selected_columns = ", ".join(OBSERVATION_COLUMNS)
+    connection.executescript(
+        f"""
+        BEGIN IMMEDIATE;
+        ALTER TABLE observations RENAME TO observations_outdated;
+        {CREATE_OBSERVATIONS_TABLE_SQL};
+        INSERT INTO observations ({selected_columns})
+        SELECT {selected_columns} FROM observations_outdated;
+        DROP TABLE observations_outdated;
+        COMMIT;
+        """
+    )
 
 
 @contextmanager
@@ -200,14 +253,13 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
             connection.execute(
                 """
                 INSERT INTO observations (
-                  local_id, farmer_id, farm_id, timestamp, image_uri, crop,
+                  local_id, farmer_id, farm_id, timestamp, crop,
                   diagnosis_id, confidence, sync_status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'SYNCED')
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, 'SYNCED')
                 ON CONFLICT(local_id) DO UPDATE SET
                   farmer_id = excluded.farmer_id,
                   farm_id = excluded.farm_id,
                   timestamp = excluded.timestamp,
-                  image_uri = excluded.image_uri,
                   crop = excluded.crop,
                   diagnosis_id = excluded.diagnosis_id,
                   confidence = excluded.confidence,
@@ -219,7 +271,6 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
                     payload.farmer_id,
                     payload.farm_id,
                     payload.timestamp,
-                    payload.image_uri,
                     payload.crop,
                     payload.diagnosis_id,
                     payload.confidence,
@@ -232,7 +283,7 @@ def create_app(database_path: str | Path | None = None) -> FastAPI:
         with open_database(request) as connection:
             rows = connection.execute(
                 """
-                SELECT local_id, farmer_id, farm_id, timestamp, image_uri, crop,
+                SELECT local_id, farmer_id, farm_id, timestamp, crop,
                        diagnosis_id, confidence, sync_status
                 FROM observations
                 ORDER BY timestamp DESC

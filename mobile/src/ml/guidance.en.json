@@ -157,7 +157,7 @@
       "curativeTreatment": "limited",
       "treatments": [
         {
-          "name": "Monitor disease severity",
+          "name": "Monitor disease spread",
           "category": "field_management",
           "description": "Monitor nearby maize plants and determine whether the disease is spreading significantly.",
           "costLevel": "free",

@@ -38,6 +38,7 @@ function AppStack() {
         <Stack.Screen name="farm" options={{ title: t('nav.farm') }} />
         <Stack.Screen name="sync" options={{ title: t('nav.sync') }} />
         <Stack.Screen name="settings" options={{ title: t('nav.settings') }} />
+        <Stack.Screen name="market-prices" options={{ title: t('nav.market') }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
       </Stack>
     </>

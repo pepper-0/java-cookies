@@ -59,7 +59,7 @@
 
 ## Model Training Contract
 
-- [x] Removed severity from the classifier result, diagnosis screen navigation, result screen, local observation contract, synchronization payload, backend API, and new database schemas.
+- [x] Removed the obsolete disease-intensity field from the classifier result, diagnosis screen navigation, result screen, local observation contract, synchronization payload, backend API, and database schemas.
 - [x] Defined one 15-class output shared by the MobileNetV3 training handoff and mobile app labels.
 - [x] Maize classes: Healthy, Maize Streak Disease, Northern Leaf Blight, Common Rust, and Unknown.
 - [x] Cassava classes: Healthy, Cassava Brown Streak Disease, Cassava Bacterial Blight, Cassava Mosaic Disease, and Unknown.
@@ -67,7 +67,7 @@
 - [x] Added the expected dataset directory structure and ignored datasets, checkpoints, training runs, and exported model binaries in Git.
 - [x] Validated exact class-index agreement between `mobilenetv3-training/classes.json` and `mobile/src/ml/labels.json`.
 - [x] Mobile TypeScript and Expo lint checks pass.
-- [x] Backend API tests pass without a severity field, including compatibility with an existing database that still has the old nullable column.
+- [x] Backend API tests confirm obsolete observation columns are removed while existing records are preserved.
 - [x] Android bundle check passes after the diagnosis-contract update.
 - [ ] Run the updated diagnosis flow manually in the Android emulator.
 
@@ -87,7 +87,9 @@
 
 - [x] Converted the blank result area into an explicit 4:3 preview of the crop photo used for diagnosis.
 - [x] Added visible loading, loaded-caption, and unavailable-photo states.
-- [x] Added a Choose Another Photo recovery action and prevented saving an observation when its image cannot be displayed.
+- [x] Added a Choose Another Photo recovery action. Saving stores diagnosis metadata even if the transient preview becomes unavailable.
+- [x] Crop photos remain transient during diagnosis and are not copied into app storage or included in observation records or sync payloads.
+- [x] Added version-2 mobile and backend migrations that remove legacy persisted photo references while preserving observation metadata; the mobile migration also removes the legacy observation-image directory.
 - [x] Mobile TypeScript and Expo lint checks pass.
 - [x] Android bundle check passes.
 - [ ] Confirm the local photo renders on the diagnosis result screen in the Android emulator.
@@ -113,3 +115,13 @@
 - [x] Added cross-locale contract validation for diagnosis coverage, symptom counts, treatment counts, types, and treatment categories.
 - [ ] Have a native French speaker and DRC agricultural expert review terminology, treatment guidance, and prices.
 - [ ] Confirm English/French switching and all translated layouts in the Android emulator.
+
+## Static Market Price Demonstration
+
+- [x] Enabled the Market Prices home tile and added a dedicated Expo Router screen.
+- [x] Added an asynchronous market-price provider contract backed by nine static CDF-per-kilogram demonstration values for maize, cassava, and rice.
+- [x] Added crop filters, pull timestamps, manual refresh, loading and error states, and English/French interface text.
+- [x] Clearly marked all displayed values as invented demonstration data that must not be used for real buying or selling decisions.
+- [x] TypeScript, Expo lint, diagnosis-guidance validation, and Android bundle checks pass with the market-price feature enabled.
+- [ ] Replace the static provider with a reviewed, timestamped live DRC market-data source before production use.
+- [ ] Validate market terminology, units, locations, and mobile layout with local agricultural experts and Android emulator users.

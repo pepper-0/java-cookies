@@ -6,7 +6,6 @@ import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 import { ActionButton, Card, Screen } from '@/components/ui';
 import { useTranslation } from '@/localization';
 import { classifyImage } from '@/ml/classifier';
-import { persistObservationImage } from '@/storage/images';
 import { colors, radius, spacing } from '@/theme';
 
 export default function DiagnoseScreen() {
@@ -14,16 +13,9 @@ export default function DiagnoseScreen() {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
 
-  const handleSelectedUri = useCallback(async (uri: string) => {
-    try {
-      setWorking(true);
-      setImageUri(await persistObservationImage(uri));
-    } catch (error) {
-      Alert.alert(t('diagnose.keepPhotoError'), error instanceof Error ? error.message : t('common.tryAgain'));
-    } finally {
-      setWorking(false);
-    }
-  }, [t]);
+  const handleSelectedUri = useCallback((uri: string) => {
+    setImageUri(uri);
+  }, []);
 
   useEffect(() => {
     ImagePicker.getPendingResultAsync().then((pending) => {

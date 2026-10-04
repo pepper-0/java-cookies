@@ -1,13 +1,14 @@
+import * as Speech from 'expo-speech';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton, Card, Screen } from '@/components/ui';
 import { getCropLabel } from '@/constants/profile-options';
 import { type TranslationKey, useTranslation } from '@/localization';
 import { getDiseaseDiagnosis } from '@/ml/guidance';
-import { saveObservation } from '@/storage/database';
+import { getSetting, saveObservation } from '@/storage/database';
 import { colors, radius, spacing } from '@/theme';
 
 const codeTranslationKeys: Record<string, TranslationKey> = {
@@ -40,6 +41,8 @@ export default function ResultScreen() {
   }>();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [audioGuidanceEnabled, setAudioGuidanceEnabled] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [imageStatus, setImageStatus] = useState<'loading' | 'loaded' | 'error'>(
     params.imageUri ? 'loading' : 'error',
   );
@@ -49,6 +52,67 @@ export default function ResultScreen() {
     [locale, params.diagnosisId],
   );
   const displayedImageStatus = params.imageUri ? imageStatus : 'error';
+
+  const spokenText = useMemo(() => {
+    const parts = [
+      diagnosis.name,
+      diagnosis.voiceMessage,
+      diagnosis.symptoms.length ? `${t('result.symptoms')}: ${diagnosis.symptoms.join('. ')}` : '',
+      diagnosis.treatments.length
+        ? `${t('result.actions')}: ${diagnosis.treatments.map((treatment) => `${treatment.name}. ${treatment.description}`).join('. ')}`
+        : '',
+    ];
+
+    return parts.filter(Boolean).join('. ');
+  }, [diagnosis, t]);
+
+  useEffect(() => {
+    let active = true;
+
+    getSetting(db, 'audio_guidance_enabled')
+      .then((value) => {
+        if (active) setAudioGuidanceEnabled(value === '1');
+      })
+      .catch(() => {
+        if (active) setAudioGuidanceEnabled(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [db]);
+
+  function handleSpeak() {
+    if (!spokenText) return;
+
+    if (isSpeaking) {
+      Speech.stop();
+      setIsSpeaking(false);
+      return;
+    }
+
+    Speech.speak(spokenText, {
+      language: locale === 'fr' ? 'fr-FR' : 'en-US',
+      pitch: 1,
+      rate: 0.9,
+      onDone: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
+      onStopped: () => setIsSpeaking(false),
+    });
+    setIsSpeaking(true);
+  }
+
+  useEffect(() => {
+    if (!audioGuidanceEnabled || !spokenText) return;
+
+    const timeout = setTimeout(() => {
+      handleSpeak();
+    }, 500);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [audioGuidanceEnabled, spokenText]);
 
   async function save() {
     if (!params.diagnosisId || !params.crop) {
@@ -209,6 +273,12 @@ export default function ResultScreen() {
 
         <Text style={styles.disclaimer}>{t('result.disclaimer')}</Text>
       </Card>
+
+      <ActionButton
+        label={isSpeaking ? t('result.stopListening') : t('result.listen')}
+        onPress={handleSpeak}
+        tone="secondary"
+      />
 
       {saved ? (
         <Card>

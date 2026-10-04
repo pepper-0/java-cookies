@@ -636,7 +636,7 @@ export function getDiseaseInfo(crop, prediction) {
 export function processPrediction(crop, prediction, confidence) {
 
   // Example threshold — validate/calibrate this with your model.
-  const CONFIDENCE_THRESHOLD = 0.70;
+  const CONFIDENCE_THRESHOLD = 0.60;
 
   if (confidence < CONFIDENCE_THRESHOLD) {
     return {
@@ -658,27 +658,5 @@ export function processPrediction(crop, prediction, confidence) {
   return {
     ...result,
     confidence: Math.round(confidence * 100)
-  };
-}
-
-
-// ============================================================
-// SIMPLE COST CALCULATOR
-// ============================================================
-
-export function calculateTreatmentCost({
-  pricePerUnit,
-  unitsNeeded,
-  laborCost = 0,
-  transportCost = 0
-}) {
-
-  const inputCost = pricePerUnit * unitsNeeded;
-
-  return {
-    inputCost,
-    laborCost,
-    transportCost,
-    totalCost: inputCost + laborCost + transportCost
   };
 }
